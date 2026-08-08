@@ -1,0 +1,12 @@
+# Environment & Secrets (CRITICAL)
+.env
+.env.local
+*-keypair.json
+
+# Anchor
+target/
+test-ledger/
+.anchor/
+
+# Node
+node_modules/
