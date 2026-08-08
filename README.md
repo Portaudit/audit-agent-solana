@@ -45,3 +45,18 @@ cp .env.example .env   # paste your OpenRouter key + fund a Devnet keypair
 # Run the agent
 npm run dev
 ```
+
+## 🧪 Quickstart (Run It Yourself)
+
+```bash
+# Build the program and generate the IDL
+anchor build
+
+# Set up the orchestrator
+cd orchestrator/orchestrator
+npm install
+cp .env.example .env   # paste your OpenRouter key + fund a Devnet keypair
+
+# Run the agent
+npm run dev
+```
