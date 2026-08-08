@@ -30,3 +30,18 @@ The validation logic is inspired by Sherlock.xyz contest criteria. The AI doesn'
 3. Nemotron returns a strict JSON object with the patch and confidence score.
 4. Orchestrator validates the patch locally.
 5. If valid, the smart contract pays the AI Agent and closes the account.
+
+## 🧪 Quickstart (Run It Yourself)
+
+```bash
+# Build the program and generate the IDL
+anchor build
+
+# Set up the orchestrator
+cd orchestrator/orchestrator
+npm install
+cp .env.example .env   # paste your OpenRouter key + fund a Devnet keypair
+
+# Run the agent
+npm run dev
+```
