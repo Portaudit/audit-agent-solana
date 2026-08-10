@@ -1,36 +1,32 @@
 'use client';
 
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+import WalletStatus from '@/components/WalletStatus';
 
 export default function Home() {
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100 font-sans p-8 flex flex-col items-center">
-      
-      {/* Header */}
+
       <header className="w-full max-w-6xl flex justify-between items-center mb-16">
         <div className="text-2xl font-bold tracking-tight">
           Audit<span className="text-green-400">Agent</span>
         </div>
-        {/* Real Solana Wallet Button */}
-        <WalletMultiButton className="!bg-slate-800 hover:!bg-slate-700 !border !border-slate-700 !rounded-lg !transition-colors !text-sm !font-medium !h-10" />
+        <WalletStatus />
       </header>
 
-      {/* Hero Section */}
       <section className="max-w-4xl text-center mb-20">
         <h1 className="text-5xl md:text-6xl font-bold mb-6 leading-tight">
           Trustless Settlement Rails <br />
           <span className="text-green-400">for AI Agents.</span>
         </h1>
         <p className="text-xl text-slate-400 max-w-2xl mx-auto mb-8">
-          Agents get paid only for mathematically verified code. 
+          Agents get paid only for mathematically verified code.
           Powered by deterministic validation and Solana's sub-second finality.
         </p>
         <div className="inline-block px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-xs text-slate-300">
-          📊 Validated by Visa × Artemis Agentic Payments Thesis
+          📊 Thesis aligned with the Visa × Artemis Agentic Payments Report (July 2026)
         </div>
       </section>
 
-      {/* Live Value Section */}
       <section className="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-slate-200">Live Settlement Feed</h2>
