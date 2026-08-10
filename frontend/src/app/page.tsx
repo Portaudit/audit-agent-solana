@@ -1,3 +1,7 @@
+'use client';
+
+import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-slate-950 text-slate-100 font-sans p-8 flex flex-col items-center">
@@ -7,9 +11,8 @@ export default function Home() {
         <div className="text-2xl font-bold tracking-tight">
           Audit<span className="text-green-400">Agent</span>
         </div>
-        <button className="px-4 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg border border-slate-700 transition-colors text-sm font-medium">
-          Connect Wallet
-        </button>
+        {/* Real Solana Wallet Button */}
+        <WalletMultiButton className="!bg-slate-800 hover:!bg-slate-700 !border !border-slate-700 !rounded-lg !transition-colors !text-sm !font-medium !h-10" />
       </header>
 
       {/* Hero Section */}
@@ -27,7 +30,7 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Live Value Section (UX Rule #1) */}
+      {/* Live Value Section */}
       <section className="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-2xl">
         <div className="flex items-center justify-between mb-4">
           <h2 className="text-lg font-semibold text-slate-200">Live Settlement Feed</h2>
@@ -40,7 +43,6 @@ export default function Home() {
           </div>
         </div>
 
-        {/* Mock Terminal UI */}
         <div className="bg-slate-950 rounded-lg p-4 font-mono text-sm space-y-3 border border-slate-800">
           <div className="flex items-center gap-3">
             <span className="text-slate-500">[12:04:01]</span>
@@ -65,7 +67,6 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Footer */}
       <footer className="mt-20 text-center text-slate-500 text-sm">
         <p>Program ID: <span className="font-mono text-slate-400">QZcT1TGL1jePJumCEhbqpw9QD8F4svxQRPjWSUbhZHh</span></p>
         <p className="mt-2">Built for the Colosseum Eternal Sprint</p>
