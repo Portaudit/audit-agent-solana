@@ -60,3 +60,11 @@ cp .env.example .env   # paste your OpenRouter key + fund a Devnet keypair
 # Run the agent
 npm run dev
 ```
+
+## 📊 Market Validation (Visa × Artemis, July 2026)
+The Visa/Artemis Agentic Payments Report confirms the thesis AuditAgent is built on:
+- **Real machine-native micropayments exist:** x402 has processed ~$19M adjusted volume across ~134M transactions (fraction-of-a-cent average) since May 2025.
+- **Trust is the hardest unsolved problem:** the report flags mis-purchase risk, prompt injection, liability ambiguity, and *cascading failures* in agent-to-agent chains — with "no established resolution mechanism."
+- **Solana is #2 and the category is still being defined:** the verification/facilitator layer for Solana agentic commerce is unclaimed.
+
+AuditAgent is that layer: a specialized **facilitator** that deterministically verifies an agent's work before on-chain settlement — the missing resolution mechanism for agent-to-agent chains.
