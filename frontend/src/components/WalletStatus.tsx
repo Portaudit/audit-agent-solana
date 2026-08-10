@@ -1,9 +1,15 @@
 'use client';
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
-import { WalletMultiButton } from '@solana/wallet-adapter-react-ui';
 import { LAMPORTS_PER_SOL } from '@solana/web3.js';
 import { useCallback, useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
+
+// Render the wallet button client-only to avoid hydration mismatch
+const WalletMultiButton = dynamic(
+  () => import('@solana/wallet-adapter-react-ui').then((m) => m.WalletMultiButton),
+  { ssr: false }
+);
 
 export default function WalletStatus() {
   const { connection } = useConnection();
@@ -17,7 +23,11 @@ export default function WalletStatus() {
     setBalance(lamports / LAMPORTS_PER_SOL);
   }, [publicKey, connection]);
 
-  useEffect(() => { refresh(); }, [refresh]);
+  useEffect(() => {
+    refresh();
+    const id = setInterval(refresh, 5000);
+    return () => clearInterval(id);
+  }, [refresh]);
 
   const airdrop = async () => {
     if (!publicKey) return;
@@ -27,7 +37,7 @@ export default function WalletStatus() {
       await connection.confirmTransaction(sig);
       await refresh();
     } catch (e) {
-      console.warn('Airdrop failed (rate-limited?):', e);
+      console.warn('Airdrop failed (faucet rate-limited). Use CLI transfer instead.');
     } finally {
       setAirdropping(false);
     }

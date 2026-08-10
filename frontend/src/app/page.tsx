@@ -1,6 +1,7 @@
 'use client';
 
 import WalletStatus from '@/components/WalletStatus';
+import AuditForm from '@/components/AuditForm';
 
 export default function Home() {
   return (
@@ -38,7 +39,6 @@ export default function Home() {
             <span className="text-xs text-green-400 font-medium">Devnet Active</span>
           </div>
         </div>
-
         <div className="bg-slate-950 rounded-lg p-4 font-mono text-sm space-y-3 border border-slate-800">
           <div className="flex items-center gap-3">
             <span className="text-slate-500">[12:04:01]</span>
@@ -62,6 +62,8 @@ export default function Home() {
           </div>
         </div>
       </section>
+
+      <AuditForm />
 
       <footer className="mt-20 text-center text-slate-500 text-sm">
         <p>Program ID: <span className="font-mono text-slate-400">QZcT1TGL1jePJumCEhbqpw9QD8F4svxQRPjWSUbhZHh</span></p>
