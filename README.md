@@ -72,3 +72,7 @@ AuditAgent is that layer: a specialized **facilitator** that deterministically v
 **Sources:**
 - [Visa × Artemis — Agentic Payments from the Ground Up (July 2026)](https://www.visa.com/en-us/thought-leadership/innovation/agentic-payments-from-the-ground-up)
 - [Full Report (PDF)](https://www.visa.com/api/image-proxy?path=%2Fcontent%2Fdam%2Fvisa%2Freimagine-visa%2Fthought-leadership%2Fdocuments%2Fagentic-payments-report.pdf)
+
+**Sources:**
+- [Visa × Artemis — Agentic Payments from the Ground Up (July 2026)](https://www.visa.com/en-us/thought-leadership/innovation/agentic-payments-from-the-ground-up)
+- [Full Report (PDF)](https://www.visa.com/api/image-proxy?path=%2Fcontent%2Fdam%2Fvisa%2Freimagine-visa%2Fthought-leadership%2Fdocuments%2Fagentic-payments-report.pdf)
