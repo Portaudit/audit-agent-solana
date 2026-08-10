@@ -68,3 +68,7 @@ The Visa/Artemis Agentic Payments Report confirms the thesis AuditAgent is built
 - **Solana is #2 and the category is still being defined:** the verification/facilitator layer for Solana agentic commerce is unclaimed.
 
 AuditAgent is that layer: a specialized **facilitator** that deterministically verifies an agent's work before on-chain settlement — the missing resolution mechanism for agent-to-agent chains.
+
+**Sources:**
+- [Visa × Artemis — Agentic Payments from the Ground Up (July 2026)](https://www.visa.com/en-us/thought-leadership/innovation/agentic-payments-from-the-ground-up)
+- [Full Report (PDF)](https://www.visa.com/api/image-proxy?path=%2Fcontent%2Fdam%2Fvisa%2Freimagine-visa%2Fthought-leadership%2Fdocuments%2Fagentic-payments-report.pdf)
