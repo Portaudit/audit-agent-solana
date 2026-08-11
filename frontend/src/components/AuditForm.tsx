@@ -11,7 +11,7 @@ const DISCRIMINATOR = [194, 80, 6, 180, 232, 127, 48, 171];
 
 async function sha256Hex(input: string): Promise<string> {
   const data = new TextEncoder().encode(input);
-  const digest = await crypto.subtle.digest('SHA-256', data);
+  const digest = await crypto.subtle.digest('SHA-256', data as unknown as ArrayBuffer);
   return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
@@ -70,6 +70,7 @@ export default function AuditForm() {
         data: buildCreateTaskData(taskHash, new PublicKey(agentWallet.trim()), lamports) as unknown as Buffer,
       }));
 
+      if (!signTransaction) throw new Error('Wallet does not support signTransaction');
       const signedTx = await signTransaction(tx);
       const signature = await connection.sendRawTransaction(signedTx.serialize(), { maxRetries: 10 });
       setTxSig(signature);
