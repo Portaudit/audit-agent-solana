@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { Connection, Keypair, PublicKey, Transaction, TransactionInstruction } from '@solana/web3.js';
 import { z } from 'zod';
-import fs from 'fs';
 import crypto from 'crypto';
 
 const PROGRAM_ID = new PublicKey('QZcT1TGL1jePJumCEhbqpw9QD8F4svxQRPjWSUbhZHh');
@@ -15,8 +14,9 @@ const AuditSchema = z.object({
 });
 
 function loadOrchestrator(): Keypair {
-  const p = process.env.ORCHESTRATOR_KEYPAIR || '/home/ishvir/.config/solana/id.json';
-  return Keypair.fromSecretKey(Uint8Array.from(JSON.parse(fs.readFileSync(p, 'utf-8'))));
+  const secret = process.env.ORCHESTRATOR_SECRET;
+  if (!secret) throw new Error('ORCHESTRATOR_SECRET not set');
+  return Keypair.fromSecretKey(Uint8Array.from(JSON.parse(secret)));
 }
 
 function deriveEscrow(user: PublicKey): PublicKey {
