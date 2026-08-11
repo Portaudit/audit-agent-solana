@@ -46,21 +46,6 @@ cp .env.example .env   # paste your OpenRouter key + fund a Devnet keypair
 npm run dev
 ```
 
-## 🧪 Quickstart (Run It Yourself)
-
-```bash
-# Build the program and generate the IDL
-anchor build
-
-# Set up the orchestrator
-cd orchestrator/orchestrator
-npm install
-cp .env.example .env   # paste your OpenRouter key + fund a Devnet keypair
-
-# Run the agent
-npm run dev
-```
-
 ## 📊 Market Validation (Visa × Artemis, July 2026)
 The Visa/Artemis Agentic Payments Report confirms the thesis AuditAgent is built on:
 - **Real machine-native micropayments exist:** x402 has processed ~$19M adjusted volume across ~134M transactions (fraction-of-a-cent average) since May 2025.
@@ -73,6 +58,14 @@ AuditAgent is that layer: a specialized **facilitator** that deterministically v
 - [Visa × Artemis — Agentic Payments from the Ground Up (July 2026)](https://www.visa.com/en-us/thought-leadership/innovation/agentic-payments-from-the-ground-up)
 - [Full Report (PDF)](https://www.visa.com/api/image-proxy?path=%2Fcontent%2Fdam%2Fvisa%2Freimagine-visa%2Fthought-leadership%2Fdocuments%2Fagentic-payments-report.pdf)
 
-**Sources:**
-- [Visa × Artemis — Agentic Payments from the Ground Up (July 2026)](https://www.visa.com/en-us/thought-leadership/innovation/agentic-payments-from-the-ground-up)
-- [Full Report (PDF)](https://www.visa.com/api/image-proxy?path=%2Fcontent%2Fdam%2Fvisa%2Freimagine-visa%2Fthought-leadership%2Fdocuments%2Fagentic-payments-report.pdf)
+
+## 🖥️ Frontend Dashboard (Devnet)
+
+A Next.js dashboard that speaks raw Anchor bytecode: wallet connect, live Devnet
+balance, one-click escrow funding, and the AI audit + settlement verdict UI.
+
+    cd frontend
+    npm install
+    npm run dev   # http://localhost:3000
+
+Live demo: (add your Vercel URL after deployment)
