@@ -2,25 +2,19 @@
 
 import { useConnection, useWallet } from '@solana/wallet-adapter-react';
 import {
-  PublicKey,
-  SystemProgram,
-  Transaction,
-  TransactionInstruction,
-  ComputeBudgetProgram,
+  PublicKey, SystemProgram, Transaction, TransactionInstruction, ComputeBudgetProgram,
 } from '@solana/web3.js';
 import { useState } from 'react';
 
 const PROGRAM_ID = new PublicKey('QZcT1TGL1jePJumCEhbqpw9QD8F4svxQRPjWSUbhZHh');
 const DISCRIMINATOR = [194, 80, 6, 180, 232, 127, 48, 171];
 
-// SHA-256 hex = exactly 64 chars, matching the on-chain task_hash allocation
 async function sha256Hex(input: string): Promise<string> {
   const data = new TextEncoder().encode(input);
   const digest = await crypto.subtle.digest('SHA-256', data);
   return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
 }
 
-// Borsh-encode create_task args: string + pubkey + u64 (no anchor needed)
 function buildCreateTaskData(taskHash: string, agentWallet: PublicKey, lamports: bigint): Uint8Array {
   const hashBytes = new TextEncoder().encode(taskHash);
   const data = new Uint8Array(8 + 4 + hashBytes.length + 32 + 8);
@@ -36,24 +30,27 @@ function buildCreateTaskData(taskHash: string, agentWallet: PublicKey, lamports:
 
 export default function AuditForm() {
   const { connection } = useConnection();
-  const { publicKey, sendTransaction, signTransaction } = useWallet();
+  const { publicKey, signTransaction } = useWallet();
   const [code, setCode] = useState('');
   const [agentWallet, setAgentWallet] = useState('8mumNvbgDESR1nvsw83XbocqFZPQxwEfzftBkky75xZL');
   const [amount, setAmount] = useState('0.05');
   const [loading, setLoading] = useState(false);
   const [txSig, setTxSig] = useState('');
   const [phase, setPhase] = useState<'idle' | 'confirming' | 'done'>('idle');
+  const [lastCode, setLastCode] = useState('');
+  const [verdict, setVerdict] = useState<any>(null);
+  const [auditing, setAuditing] = useState(false);
 
   const submit = async () => {
     if (!publicKey) { alert('Connect your wallet first'); return; }
     if (!code.trim()) { alert('Enter some code to audit'); return; }
     setLoading(true);
+    setVerdict(null);
     try {
       const [escrowPda] = PublicKey.findProgramAddressSync(
         [new TextEncoder().encode('escrow'), publicKey.toBuffer()],
         PROGRAM_ID
       );
-
       const taskHash = await sha256Hex(code);
       const lamports = BigInt(Math.round(parseFloat(amount) * 1e9));
 
@@ -61,47 +58,56 @@ export default function AuditForm() {
       tx.feePayer = publicKey;
       const { blockhash } = await connection.getLatestBlockhash();
       tx.recentBlockhash = blockhash;
-
-      // Priority fee so Devnet doesn't drop us
       tx.add(ComputeBudgetProgram.setComputeUnitLimit({ units: 200_000 }));
       tx.add(ComputeBudgetProgram.setComputeUnitPrice({ microLamports: 100_000 }));
-
-      tx.add(
-        new TransactionInstruction({
-          keys: [
-            { pubkey: escrowPda, isSigner: false, isWritable: true },
-            { pubkey: publicKey, isSigner: true, isWritable: true },
-            { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
-          ],
-          programId: PROGRAM_ID,
-          data: buildCreateTaskData(taskHash, new PublicKey(agentWallet.trim()), lamports) as unknown as Buffer,
-        })
-      );
+      tx.add(new TransactionInstruction({
+        keys: [
+          { pubkey: escrowPda, isSigner: false, isWritable: true },
+          { pubkey: publicKey, isSigner: true, isWritable: true },
+          { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
+        ],
+        programId: PROGRAM_ID,
+        data: buildCreateTaskData(taskHash, new PublicKey(agentWallet.trim()), lamports) as unknown as Buffer,
+      }));
 
       const signedTx = await signTransaction(tx);
       const signature = await connection.sendRawTransaction(signedTx.serialize(), { maxRetries: 10 });
       setTxSig(signature);
       setPhase('confirming');
 
-      // Robust confirmation: poll status for up to 60s
       const deadline = Date.now() + 60000;
       let ok = false;
       while (Date.now() < deadline) {
         const st = await connection.getSignatureStatus(signature);
         if (st?.value?.err) throw new Error('On-chain error: ' + JSON.stringify(st.value.err));
-        if (st?.value?.confirmationStatus === 'confirmed' || st?.value?.confirmationStatus === 'finalized') {
-          ok = true;
-          break;
-        }
+        if (st?.value?.confirmationStatus === 'confirmed' || st?.value?.confirmationStatus === 'finalized') { ok = true; break; }
         await new Promise((r) => setTimeout(r, 2000));
       }
       setPhase(ok ? 'done' : 'confirming');
+      setLastCode(code);
       setCode('');
     } catch (err: any) {
       console.error(err);
       alert('Transaction failed: ' + (err?.message || err));
     } finally {
       setLoading(false);
+    }
+  };
+
+  const runAudit = async () => {
+    if (!publicKey || !lastCode) return;
+    setAuditing(true);
+    try {
+      const res = await fetch('/api/audit', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code: lastCode, user: publicKey.toBase58() }),
+      }).then((r) => r.json());
+      setVerdict(res);
+    } catch (e: any) {
+      setVerdict({ error: e?.message || 'audit request failed' });
+    } finally {
+      setAuditing(false);
     }
   };
 
@@ -139,18 +145,14 @@ export default function AuditForm() {
               <input
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
-                type="number"
-                step="0.01"
+                type="number" step="0.01"
                 className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-sm font-mono text-slate-300 focus:outline-none focus:border-green-500"
               />
             </div>
           </div>
 
-          <button
-            onClick={submit}
-            disabled={loading}
-            className="w-full py-3 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-          >
+          <button onClick={submit} disabled={loading}
+            className="w-full py-3 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             {loading ? 'Escrowing Funds...' : `Lock ${amount} SOL & Start Audit`}
           </button>
 
@@ -159,14 +161,37 @@ export default function AuditForm() {
               <p className="text-green-400 text-sm font-semibold mb-1">
                 {phase === 'done' ? '✓ Escrow Locked' : '⏳ Submitted — confirming on Devnet…'}
               </p>
-              <a
-                href={`https://explorer.solana.com/tx/${txSig}?cluster=devnet`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-slate-400 hover:text-green-400 break-all"
-              >
+              <a href={`https://explorer.solana.com/tx/${txSig}?cluster=devnet`} target="_blank" rel="noopener noreferrer"
+                className="text-xs text-slate-400 hover:text-green-400 break-all">
                 Watch it live on Explorer: {txSig.slice(0, 24)}...
               </a>
+              {phase === 'done' && (
+                <button onClick={runAudit} disabled={auditing}
+                  className="mt-3 w-full py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm font-semibold rounded-lg disabled:opacity-50">
+                  {auditing ? '🤖 Nemotron is auditing…' : '🤖 Run AI Audit & Settle'}
+                </button>
+              )}
+            </div>
+          )}
+
+          {verdict && (
+            <div className={`p-4 rounded-lg border ${verdict.success ? 'bg-green-950/40 border-green-500' : 'bg-red-950/40 border-red-500'}`}>
+              <p className={`text-sm font-bold mb-2 ${verdict.success ? 'text-green-400' : 'text-red-400'}`}>
+                {verdict.success ? '✓ PASSED — Funds released to agent' : '✗ FAILED — Escrow refunded to user'}
+              </p>
+              {verdict.result?.reasoning && (
+                <p className="text-xs text-slate-300 mb-2 whitespace-pre-wrap">{verdict.result.reasoning}</p>
+              )}
+              {typeof verdict.result?.confidence === 'number' && (
+                <p className="text-xs text-slate-400 mb-2">Confidence: {(verdict.result.confidence * 100).toFixed(0)}%</p>
+              )}
+              {verdict.resolveSig && (
+                <a href={`https://explorer.solana.com/tx/${verdict.resolveSig}?cluster=devnet`} target="_blank" rel="noopener noreferrer"
+                  className="text-xs text-slate-400 hover:text-green-400 break-all">
+                  Settlement tx: {verdict.resolveSig.slice(0, 24)}...
+                </a>
+              )}
+              {verdict.error && <p className="text-xs text-red-300">{verdict.error}</p>}
             </div>
           )}
         </div>
