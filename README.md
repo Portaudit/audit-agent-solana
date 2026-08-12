@@ -69,3 +69,11 @@ balance, one-click escrow funding, and the AI audit + settlement verdict UI.
     npm run dev   # http://localhost:3000
 
 Live demo: (add your Vercel URL after deployment)
+
+## 🔐 Trust Model: Who Signs What
+
+- **Human (user wallet):** signs `create_task`, locking the escrow against the SHA-256 hash of the submitted code.
+- **Orchestrator (bot keypair, server-side):** the only signer of `resolve_task`. Releases funds to the agent only after the AI verdict passes deterministic validation (Zod schema + local compilation); otherwise refunds the user and closes the escrow.
+- **On-chain program:** enforces the math — PDA-derived escrow, status gating, auto-close. No human can withdraw early; no bot can pay out on a hash mismatch.
+
+Roadmap: transparent facilitator fee (bps) routed on-chain to the facilitator PDA — the toll booth, in the open.

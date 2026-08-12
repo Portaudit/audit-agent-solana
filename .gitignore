@@ -10,3 +10,4 @@ test-ledger/
 
 # Node
 node_modules/
+orchestrator.json
