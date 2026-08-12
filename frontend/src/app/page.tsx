@@ -24,7 +24,7 @@ export default function Home() {
           Powered by deterministic validation and Solana's sub-second finality.
         </p>
         <div className="inline-block px-3 py-1 rounded-full bg-slate-800 border border-slate-700 text-xs text-slate-300">
-          📊 Thesis aligned with the Visa × Artemis Agentic Payments Report (July 2026)
+          📊 <a href="https://www.visa.com/en-us/thought-leadership/innovation/agentic-payments-from-the-ground-up" target="_blank" rel="noopener noreferrer" className="underline decoration-dotted underline-offset-4 hover:opacity-80">Thesis aligned with the Visa × Artemis Agentic Payments Report (July 2026)</a>
         </div>
       </section>
 
