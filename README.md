@@ -68,7 +68,7 @@ balance, one-click escrow funding, and the AI audit + settlement verdict UI.
     npm install
     npm run dev   # http://localhost:3000
 
-Live demo: (add your Vercel URL after deployment)
+Live demo: [https://theauditagent.xyz](https://theauditagent.xyz)
 
 ## 🔐 Trust Model: Who Signs What
 
