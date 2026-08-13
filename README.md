@@ -77,3 +77,8 @@ Live demo: [https://theauditagent.xyz](https://theauditagent.xyz)
 - **On-chain program:** enforces the math — PDA-derived escrow, status gating, auto-close. No human can withdraw early; no bot can pay out on a hash mismatch.
 
 Roadmap: transparent facilitator fee (bps) routed on-chain to the facilitator PDA — the toll booth, in the open.
+
+## 📣 Build in Public
+
+- **X:** [@TheAuditAgent](https://x.com/TheAuditAgent)
+- **Launch thread:** [AuditAgent is live on Solana devnet](https://x.com/TheAuditAgent/status/2087976950157492699)
