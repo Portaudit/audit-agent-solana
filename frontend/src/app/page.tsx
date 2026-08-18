@@ -84,7 +84,7 @@ export default function Home() {
     <main className="min-h-screen bg-slate-950 text-slate-100 font-sans px-4 md:px-6 py-3 flex flex-col items-center">
 
       <header className="w-full max-w-7xl flex items-center justify-between gap-4 mb-3">
-        <div className="text-xl font-bold tracking-tight shrink-0">
+        <div className="text-xl md:text-2xl font-bold tracking-tight shrink-0">
           Audit<span className="text-green-400">Agent</span>
         </div>
         <div className="hidden md:block text-center flex-1">
