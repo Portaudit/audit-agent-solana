@@ -119,7 +119,7 @@ export default function AuditForm() {
       {!publicKey ? (
         <p className="text-slate-400 text-xs">Connect your wallet to submit an audit.</p>
       ) : (
-        <div className="space-y-3 flex-1 flex flex-col">
+        <div className="space-y-2 flex-1 flex flex-col">
           <div className="flex-1 flex flex-col">
             <label className="block text-xs text-slate-400 mb-1">
               Code to audit <span className="text-slate-600">(its SHA-256 hash is stored on-chain)</span>
@@ -128,7 +128,7 @@ export default function AuditForm() {
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder={'fn main() {\n    // paste Rust/Anchor code here\n}'}
-              className="w-full flex-1 min-h-[80px] bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs font-mono text-slate-300 focus:outline-none focus:border-green-500 resize-none"
+              className="w-full flex-1 min-h-[60px] bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs font-mono text-slate-300 focus:outline-none focus:border-green-500 resize-none"
             />
           </div>
 
