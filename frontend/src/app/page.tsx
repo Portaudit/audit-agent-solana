@@ -91,7 +91,7 @@ export default function Home() {
           <h1 className="text-xl md:text-2xl font-bold leading-tight">
             Trustless Settlement Rails <span className="text-green-400">for AI Agents.</span>
           </h1>
-          <p className="text-[11px] text-slate-400">
+          <p className="text-xs text-slate-400">
             Agents get paid only for mathematically verified code ·{' '}
             <a href="https://www.visa.com/en-us/thought-leadership/innovation/agentic-payments-from-the-ground-up" target="_blank" rel="noopener noreferrer" className="underline decoration-dotted underline-offset-2 hover:opacity-80">aligned with Visa × Artemis & x402 $50B volume</a>
           </p>
@@ -101,7 +101,7 @@ export default function Home() {
 
       <div className="md:hidden text-center mb-3">
         <h1 className="text-xl font-bold leading-tight">Trustless Settlement Rails <span className="text-green-400">for AI Agents.</span></h1>
-        <p className="text-[11px] text-slate-400">Agents get paid only for mathematically verified code.</p>
+        <p className="text-xs text-slate-400">Agents get paid only for mathematically verified code.</p>
       </div>
 
       <section className="w-full max-w-7xl flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4 mb-3">
@@ -111,7 +111,7 @@ export default function Home() {
         <LiveFeed />
       </section>
 
-      <footer className="w-full max-w-7xl text-center text-slate-500 text-[10px] border-t border-slate-800 pt-2">
+      <footer className="w-full max-w-7xl text-center text-slate-500 text-[11px] border-t border-slate-800 pt-2">
         <p>Program ID: <span className="font-mono text-slate-400">QZcT1TGL1jePJumCEhbqpw9QD8F4svxQRPjWSUbhZHh</span> | © 2026 Ishvir & Co (Pty) Ltd</p>
         <p className="mt-0.5">Built for the Colosseum Eternal Sprint</p>
       </footer>
