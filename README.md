@@ -1,84 +1,53 @@
-![AuditAgent Banner](./banner.jpg)
+# AuditAgent
 
-# AuditAgent: Trustless AI Settlement Rails for Solana
+Trustless settlement rails for AI agents on Solana. Agents get paid only for mathematically verified code.
 
-## 🌐 Live on Devnet
-**Program ID:** `QZcT1TGL1jePJumCEhbqpw9QD8F4svxQRPjWSUbhZHh`  
-[View on Solana Explorer](https://explorer.solana.com/address/QZcT1TGL1jePJumCEhbqpw9QD8F4svxQRPjWSUbhZHh?cluster=devnet)
+## Architecture
 
-## 🚨 The Problem
-AI agents can generate Solana code, but they hallucinate. If an AI agent writes a buggy smart contract, or if a protocol uses AI to audit code, how do you mathematically prove the work was done correctly *before* paying for it? 
+The system operates through two core components:
 
-## 💡 The Solution
-AuditAgent is a deterministic, on-chain escrow system. An AI agent (powered by Nemotron 3 Ultra) only receives its payment if its generated patch **compiles locally** and **passes strict Zod validation schemas**. 
+### Aediles (The Auditor)
+Named after Roman magistrates who regulated markets and ensured fair trade. Aediles is the deterministic AI auditor that:
+- Analyzes Solana Rust code for security vulnerabilities
+- Enforces strict compilation and balance checks
+- Returns pass/fail verdicts with reasoning
 
-## 🏗️ Why Solana?
-This architecture requires sub-second finality and micro-fees. An agent running 10 validation loops per minute would burn $50 in gas on Ethereum L2s. On Solana, it costs fractions of a cent. **Solana is the only chain capable of high-frequency AI agent commerce.**
+### Hypogeum (The Orchestrator)
+Named after the hidden machinery beneath the Colosseum arena. Hypogeum is the cloud orchestrator that:
+- Manages the escrow lifecycle on-chain
+- Coordinates between Aediles and the settlement bot
+- Triggers deterministic state transitions (release or refund)
 
-## 🧠 The Sherlock Connection
-The validation logic is inspired by Sherlock.xyz contest criteria. The AI doesn't just "guess" code; it is forced to identify specific vulnerabilities (missing signer checks, PDA seed verification) and prove the fix locally.
+## Flow
 
-## 🛠️ Tech Stack
-- **Smart Contract:** Anchor (Rust) - Deterministic Escrow & Auto-Close
-- **AI Orchestrator:** Node.js / TypeScript - ReAct Loop & Zod Validation
-- **AI Model:** Nemotron 3 Ultra (via OpenRouter) - Structured JSON Mode
-- **Compute Cost:** $0.00 per audit (Free-tier optimized)
+1. **Lock**: User locks SOL into escrow PDA with SHA-256 hash of code
+2. **Audit**: Aediles analyzes code via Nemotron AI + deterministic gates
+3. **Settle**: Hypogeum triggers on-chain settlement
+   - PASS: Funds released to agent wallet
+   - FAIL: Escrow auto-refunded to user
 
-## 🚀 How it Works
-1. User funds the on-chain escrow.
-2. Orchestrator reads the code and sends it to Nemotron.
-3. Nemotron returns a strict JSON object with the patch and confidence score.
-4. Orchestrator validates the patch locally.
-5. If valid, the smart contract pays the AI Agent and closes the account.
+## Live Demo
 
-## 🧪 Quickstart (Run It Yourself)
+[theauditagent.xyz](https://theauditagent.xyz) (Solana Devnet)
 
-```bash
-# Build the program and generate the IDL
-anchor build
+Program ID: `QZcT1TGL1jePJumCEhbqpw9QD8F4svxQRPjWSUbhZHh`
 
-# Set up the orchestrator
-cd orchestrator/orchestrator
-npm install
-cp .env.example .env   # paste your OpenRouter key + fund a Devnet keypair
+## Stack
 
-# Run the agent
-npm run dev
-```
+- **Frontend**: Next.js, TypeScript, Tailwind CSS
+- **Backend**: Vercel Edge Functions
+- **Blockchain**: Solana (Anchor framework, Rust)
+- **AI**: Nemotron 3 Ultra
+- **Wallet**: Phantom
 
-## 📊 Market Validation (Visa × Artemis, July 2026)
-The Visa/Artemis Agentic Payments Report confirms the thesis AuditAgent is built on:
-- **Real machine-native micropayments exist:** x402 has processed ~$19M adjusted volume across ~134M transactions (fraction-of-a-cent average) since May 2025.
-- **Trust is the hardest unsolved problem:** the report flags mis-purchase risk, prompt injection, liability ambiguity, and *cascading failures* in agent-to-agent chains — with "no established resolution mechanism."
-- **Solana is #2 and the category is still being defined:** the verification/facilitator layer for Solana agentic commerce is unclaimed.
+## Context
 
-AuditAgent is that layer: a specialized **facilitator** that deterministically verifies an agent's work before on-chain settlement — the missing resolution mechanism for agent-to-agent chains.
+Built for the Colosseum Eternal Accelerator & $250k investment.
 
-**Sources:**
-- [Visa × Artemis — Agentic Payments from the Ground Up (July 2026)](https://www.visa.com/en-us/thought-leadership/innovation/agentic-payments-from-the-ground-up)
-- [Full Report (PDF)](https://www.visa.com/api/image-proxy?path=%2Fcontent%2Fdam%2Fvisa%2Freimagine-visa%2Fthought-leadership%2Fdocuments%2Fagentic-payments-report.pdf)
+Aligned with the Visa × Artemis Agentic Payments Report (July 2026) and the x402 $50B transaction volume milestone.
 
+## License
 
-## 🖥️ Frontend Dashboard (Devnet)
+Copyright (c) 2026 Ishvir & Co (Pty) Ltd
 
-A Next.js dashboard that speaks raw Anchor bytecode: wallet connect, live Devnet
-balance, one-click escrow funding, and the AI audit + settlement verdict UI.
-
-    cd frontend
-    npm install
-    npm run dev   # http://localhost:3000
-
-Live demo: [https://theauditagent.xyz](https://theauditagent.xyz)
-
-## 🔐 Trust Model: Who Signs What
-
-- **Human (user wallet):** signs `create_task`, locking the escrow against the SHA-256 hash of the submitted code.
-- **Orchestrator (bot keypair, server-side):** the only signer of `resolve_task`. Releases funds to the agent only after the AI verdict passes deterministic validation (Zod schema + local compilation); otherwise refunds the user and closes the escrow.
-- **On-chain program:** enforces the math — PDA-derived escrow, status gating, auto-close. No human can withdraw early; no bot can pay out on a hash mismatch.
-
-Roadmap: transparent facilitator fee (bps) routed on-chain to the facilitator PDA — the toll booth, in the open.
-
-## 📣 Build in Public
-
-- **X:** [@TheAuditAgent](https://x.com/TheAuditAgent)
-- **Launch thread:** [AuditAgent is live on Solana devnet](https://x.com/TheAuditAgent/status/2087976950157492699)
+All rights reserved.
