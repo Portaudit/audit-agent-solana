@@ -113,86 +113,86 @@ export default function AuditForm() {
   };
 
   return (
-    <div className="w-full max-w-4xl bg-slate-900 border border-slate-800 rounded-xl p-6 shadow-2xl mt-8">
-      <h2 className="text-lg font-semibold text-slate-200 mb-4">Submit Code for Audit</h2>
+    <div className="w-full bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-2xl h-full flex flex-col">
+      <h2 className="text-sm font-semibold text-slate-200 mb-2">Submit Code for Audit</h2>
 
       {!publicKey ? (
-        <p className="text-slate-400 text-sm">Connect your wallet to submit an audit.</p>
+        <p className="text-slate-400 text-xs">Connect your wallet to submit an audit.</p>
       ) : (
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm text-slate-400 mb-2">
+        <div className="space-y-3 flex-1 flex flex-col">
+          <div className="flex-1 flex flex-col">
+            <label className="block text-xs text-slate-400 mb-1">
               Code to audit <span className="text-slate-600">(its SHA-256 hash is stored on-chain)</span>
             </label>
             <textarea
               value={code}
               onChange={(e) => setCode(e.target.value)}
               placeholder={'fn main() {\n    // paste Rust/Anchor code here\n}'}
-              className="w-full h-32 bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm font-mono text-slate-300 focus:outline-none focus:border-green-500"
+              className="w-full flex-1 min-h-[80px] bg-slate-950 border border-slate-800 rounded-lg p-2 text-xs font-mono text-slate-300 focus:outline-none focus:border-green-500 resize-none"
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Agent Wallet (recipient)</label>
+              <label className="block text-xs text-slate-400 mb-1">Agent Wallet</label>
               <input
                 value={agentWallet}
                 onChange={(e) => setAgentWallet(e.target.value)}
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-sm font-mono text-slate-300 focus:outline-none focus:border-green-500"
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-1.5 text-xs font-mono text-slate-300 focus:outline-none focus:border-green-500"
               />
             </div>
             <div>
-              <label className="block text-sm text-slate-400 mb-2">Amount (SOL)</label>
+              <label className="block text-xs text-slate-400 mb-1">Amount (SOL)</label>
               <input
                 value={amount}
                 onChange={(e) => setAmount(e.target.value)}
                 type="number" step="0.01"
-                className="w-full bg-slate-950 border border-slate-800 rounded-lg p-2 text-sm font-mono text-slate-300 focus:outline-none focus:border-green-500"
+                className="w-full bg-slate-950 border border-slate-800 rounded-lg px-2 py-1.5 text-xs font-mono text-slate-300 focus:outline-none focus:border-green-500"
               />
             </div>
           </div>
 
           <button onClick={submit} disabled={loading}
-            className="w-full py-3 bg-green-600 hover:bg-green-500 text-white font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
+            className="w-full py-2 bg-green-600 hover:bg-green-500 text-white text-sm font-semibold rounded-lg transition-colors disabled:opacity-50 disabled:cursor-not-allowed">
             {loading ? 'Escrowing Funds...' : `Lock ${amount} SOL & Start Audit`}
           </button>
 
           {txSig && (
-            <div className="p-3 bg-slate-950 border border-green-500 rounded-lg">
-              <p className="text-green-400 text-sm font-semibold mb-1">
+            <div className="p-2 bg-slate-950 border border-green-500 rounded-lg">
+              <p className="text-green-400 text-xs font-semibold mb-1">
                 {phase === 'done' ? '✓ Escrow Locked' : '⏳ Submitted — confirming on Devnet…'}
               </p>
               <a href={`https://explorer.solana.com/tx/${txSig}?cluster=devnet`} target="_blank" rel="noopener noreferrer"
-                className="text-xs text-slate-400 hover:text-green-400 break-all">
-                Watch it live on Explorer: {txSig.slice(0, 24)}...
+                className="text-[10px] text-slate-400 hover:text-green-400 break-all">
+                Explorer: {txSig.slice(0, 24)}...
               </a>
               {phase === 'done' && (
                 <button onClick={runAudit} disabled={auditing}
-                  className="mt-3 w-full py-2 bg-purple-600 hover:bg-purple-500 text-white text-sm font-semibold rounded-lg disabled:opacity-50">
-                  {auditing ? '🤖 Nemotron is auditing…' : '🤖 Run AI Audit & Settle'}
+                  className="mt-2 w-full py-1.5 bg-purple-600 hover:bg-purple-500 text-white text-xs font-semibold rounded-lg disabled:opacity-50">
+                  {auditing ? '🤖 Nemotron auditing…' : '🤖 Run AI Audit & Settle'}
                 </button>
               )}
             </div>
           )}
 
           {verdict && (
-            <div className={`p-4 rounded-lg border ${verdict.success ? 'bg-green-950/40 border-green-500' : 'bg-red-950/40 border-red-500'}`}>
-              <p className={`text-sm font-bold mb-2 ${verdict.success ? 'text-green-400' : 'text-red-400'}`}>
+            <div className={`p-2 rounded-lg border ${verdict.success ? 'bg-green-950/40 border-green-500' : 'bg-red-950/40 border-red-500'}`}>
+              <p className={`text-xs font-bold mb-1 ${verdict.success ? 'text-green-400' : 'text-red-400'}`}>
                 {verdict.success ? '✓ PASSED — Funds released to agent' : '✗ FAILED — Escrow refunded to user'}
               </p>
               {verdict.result?.reasoning && (
-                <p className="text-xs text-slate-300 mb-2 whitespace-pre-wrap">{verdict.result.reasoning}</p>
+                <p className="text-[10px] text-slate-300 mb-1 whitespace-pre-wrap">{verdict.result.reasoning}</p>
               )}
               {typeof verdict.result?.confidence === 'number' && (
-                <p className="text-xs text-slate-400 mb-2">Confidence: {(verdict.result.confidence * 100).toFixed(0)}%</p>
+                <p className="text-[10px] text-slate-400 mb-1">Confidence: {(verdict.result.confidence * 100).toFixed(0)}%</p>
               )}
               {verdict.resolveSig && (
                 <a href={`https://explorer.solana.com/tx/${verdict.resolveSig}?cluster=devnet`} target="_blank" rel="noopener noreferrer"
-                  className="text-xs text-slate-400 hover:text-green-400 break-all">
+                  className="text-[10px] text-slate-400 hover:text-green-400 break-all">
                   Settlement tx: {verdict.resolveSig.slice(0, 24)}...
                 </a>
               )}
-              {verdict.error && <p className="text-xs text-red-300">{verdict.error}</p>}
+              {verdict.error && <p className="text-[10px] text-red-300">{verdict.error}</p>}
             </div>
           )}
         </div>
