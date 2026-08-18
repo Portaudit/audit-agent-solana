@@ -33,7 +33,7 @@ function LiveFeed() {
     let alive = true;
     const load = async () => {
       try {
-        const sigs = await connection.getSignaturesForAddress(PROGRAM_ID, { limit: 6 });
+        const sigs = await connection.getSignaturesForAddress(PROGRAM_ID, { limit: 12 });
         if (!alive || sigs.length === 0) return;
         setLive(true);
         setRows(sigs.slice().reverse().map((s) => ({
