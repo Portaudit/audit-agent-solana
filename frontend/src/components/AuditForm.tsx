@@ -9,6 +9,17 @@ import { useState } from 'react';
 const PROGRAM_ID = new PublicKey('QZcT1TGL1jePJumCEhbqpw9QD8F4svxQRPjWSUbhZHh');
 const DISCRIMINATOR = [194, 80, 6, 180, 232, 127, 48, 171];
 
+const FAIL_SAMPLE = `fn withdraw(amount: u64) {
+    // no balance check!
+    send_to_user(amount);
+}`;
+
+const PASS_SAMPLE = `fn withdraw(amount: u64, balance: &mut u64) {
+    if amount > *balance { panic!("insufficient balance"); }
+    *balance -= amount;
+    send_to_user(amount);
+}`;
+
 async function sha256Hex(input: string): Promise<string> {
   const data = new TextEncoder().encode(input);
   const digest = await crypto.subtle.digest('SHA-256', data as unknown as ArrayBuffer);
@@ -121,9 +132,25 @@ export default function AuditForm() {
       ) : (
         <div className="space-y-2 flex-1 flex flex-col">
           <div className="flex-1 flex flex-col">
-            <label className="block text-xs text-slate-400 mb-1">
-              Code to audit <span className="text-slate-600">(its SHA-256 hash is stored on-chain)</span>
-            </label>
+            <div className="flex items-center justify-between gap-2 mb-1">
+              <label className="text-xs text-slate-400">
+                Code to audit <span className="text-slate-600">(SHA-256 hash stored on-chain)</span>
+              </label>
+              <div className="flex gap-1 shrink-0">
+                <button
+                  onClick={() => setCode(PASS_SAMPLE)}
+                  className="px-2 py-0.5 text-[10px] bg-green-500/10 text-green-400 border border-green-500/30 rounded hover:bg-green-500/20"
+                >
+                  ▶ PASS sample
+                </button>
+                <button
+                  onClick={() => setCode(FAIL_SAMPLE)}
+                  className="px-2 py-0.5 text-[10px] bg-red-500/10 text-red-400 border border-red-500/30 rounded hover:bg-red-500/20"
+                >
+                  ▶ FAIL sample
+                </button>
+              </div>
+            </div>
             <textarea
               value={code}
               onChange={(e) => setCode(e.target.value)}
