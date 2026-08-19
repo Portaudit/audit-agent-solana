@@ -48,9 +48,9 @@ Aligned with the Visa × Artemis Agentic Payments Report (July 2026) and the x40
 
 ## License
 
-Copyright (c) 2026 Ishvir & Co (Pty) Ltd
+Copyright (c) 2026 Ishvir & Co — a division of Ishvir and Company (Pty) Ltd
 
 All rights reserved.
 
 ## Live demo
-Failed audit auto-refund on Devnet (17s): https://x.com/TheAuditAgent/status/REPLACE_WITH_POST_ID
+Failed audit auto-refund on Devnet (17s): https://x.com/TheAuditAgent/status/2090091417540444342
