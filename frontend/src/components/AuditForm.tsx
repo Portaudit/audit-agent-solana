@@ -46,9 +46,9 @@ export default function AuditForm() {
   const [agentWallet, setAgentWallet] = useState('8mumNvbgDESR1nvsw83XbocqFZPQxwEfzftBkky75xZL');
   const [amount, setAmount] = useState('0.05');
   const [loading, setLoading] = useState(false);
-  const [txSig, setTxSig] = useState('');
-  const [phase, setPhase] = useState<'idle' | 'confirming' | 'done'>('idle');
-  const [lastCode, setLastCode] = useState('');
+  const [txSig, setTxSig] = useState<string>(() => (typeof window !== 'undefined' ? localStorage.getItem('aa_txSig') || '' : ''));
+  const [phase, setPhase] = useState<'idle' | 'confirming' | 'done'>(() => (typeof window !== 'undefined' && localStorage.getItem('aa_txSig') ? 'done' : 'idle'));
+  const [lastCode, setLastCode] = useState<string>(() => (typeof window !== 'undefined' ? localStorage.getItem('aa_lastCode') || '' : ''));
   const [verdict, setVerdict] = useState<any>(null);
   const [auditing, setAuditing] = useState(false);
 
@@ -86,6 +86,7 @@ export default function AuditForm() {
       const signature = await connection.sendRawTransaction(signedTx.serialize(), { maxRetries: 10 });
       setTxSig(signature);
       setPhase('confirming');
+      if (typeof window !== 'undefined') localStorage.setItem('aa_txSig', signature);
 
       const deadline = Date.now() + 60000;
       let ok = false;
@@ -97,6 +98,7 @@ export default function AuditForm() {
       }
       setPhase(ok ? 'done' : 'confirming');
       setLastCode(code);
+      if (typeof window !== 'undefined') localStorage.setItem('aa_lastCode', code);
       setCode('');
     } catch (err: any) {
       console.error(err);
@@ -116,6 +118,14 @@ export default function AuditForm() {
         body: JSON.stringify({ code: lastCode, user: publicKey.toBase58() }),
       }).then((r) => r.json());
       setVerdict(res);
+      if (res?.resolveSig) {
+        setTxSig('');
+        setPhase('idle');
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('aa_txSig');
+          localStorage.removeItem('aa_lastCode');
+        }
+      }
     } catch (e: any) {
       setVerdict({ error: e?.message || 'audit request failed' });
     } finally {
