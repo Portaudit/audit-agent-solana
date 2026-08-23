@@ -227,8 +227,8 @@ export default function AuditForm() {
             { pubkey: publicKey, isSigner: true, isWritable: true },
             { pubkey: userATA, isSigner: false, isWritable: true },
             { pubkey: escrowATA, isSigner: false, isWritable: true },
-            { pubkey: USDC_MINT, isSigner: false, isWritable: false },
             { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
+            { pubkey: SystemProgram.programId, isSigner: false, isWritable: false },
           ],
           programId: PROGRAM_ID,
           data: new Uint8Array(CANCEL_USDC_DISC) as unknown as Buffer,
@@ -303,13 +303,13 @@ export default function AuditForm() {
 
           <div className="flex gap-2 mb-2">
             <button
-              onClick={() => setPaymentMethod('SOL')}
+              onClick={() => { setPaymentMethod('SOL'); setVerdict(null); }}
               className={`flex-1 py-1.5 text-xs font-semibold rounded-lg border ${paymentMethod === 'SOL' ? 'bg-green-500/20 border-green-500 text-green-400' : 'bg-slate-950 border-slate-800 text-slate-400'}`}
             >
               SOL
             </button>
             <button
-              onClick={() => setPaymentMethod('USDC')}
+              onClick={() => { setPaymentMethod('USDC'); setVerdict(null); }}
               className={`flex-1 py-1.5 text-xs font-semibold rounded-lg border ${paymentMethod === 'USDC' ? 'bg-blue-500/20 border-blue-500 text-blue-400' : 'bg-slate-950 border-slate-800 text-slate-400'}`}
             >
               USDC

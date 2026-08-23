@@ -140,8 +140,18 @@ export async function POST(req: Request) {
       programId: PROGRAM_ID,
       data: data as unknown as Buffer,
     }));
-    const sig = await connection.sendTransaction(tx, [orch], { maxRetries: 10 });
-    await pollConfirmed(sig);
+    let sig: string | null = null;
+    for (let attempt = 0; attempt < 3 && !sig; attempt++) {
+      try {
+        const bh = await connection.getLatestBlockhash();
+        tx.recentBlockhash = bh.blockhash;
+        sig = await connection.sendTransaction(tx, [orch], { maxRetries: 10, preflightCommitment: 'confirmed' });
+      } catch (e: any) {
+        if (attempt === 2 || !/blockhash/i.test(e?.message || '')) throw e;
+        await new Promise((r) => setTimeout(r, 1500));
+      }
+    }
+    await pollConfirmed(sig as string);
 
     return NextResponse.json({ success, result, resolveSig: sig });
   } catch (e: any) {
