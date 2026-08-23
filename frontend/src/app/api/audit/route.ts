@@ -5,6 +5,11 @@ import crypto from 'crypto';
 
 const PROGRAM_ID = new PublicKey('QZcT1TGL1jePJumCEhbqpw9QD8F4svxQRPjWSUbhZHh');
 const RESOLVE_DISC = [116, 245, 180, 251, 30, 233, 101, 33];
+const RESOLVE_USDC_DISC = [135, 5, 200, 120, 68, 243, 252, 42];
+const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
+const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID = new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
+const USDC_MINT = new PublicKey('4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU'); // Devnet USDC
+
 const connection = new Connection('https://api.devnet.solana.com', 'confirmed');
 
 const AuditSchema = z.object({
@@ -24,6 +29,14 @@ function deriveEscrow(user: PublicKey): PublicKey {
   return pda;
 }
 
+function findATA(wallet: PublicKey, mint: PublicKey): PublicKey {
+  const [ata] = PublicKey.findProgramAddressSync(
+    [wallet.toBuffer(), TOKEN_PROGRAM_ID.toBuffer(), mint.toBuffer()],
+    SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID
+  );
+  return ata;
+}
+
 function parseEscrow(data: Buffer) {
   let o = 8;
   const user = new PublicKey(data.subarray(o, o + 32)); o += 32;
@@ -31,8 +44,9 @@ function parseEscrow(data: Buffer) {
   const len = data.readUInt32LE(o); o += 4;
   const hash = data.subarray(o, o + len).toString('utf-8'); o += len;
   const status = data.readUInt8(o); o += 1;
-  const amount = data.readBigUInt64LE(o);
-  return { user, agent, hash, status, amount };
+  const amount = data.readBigUInt64LE(o); o += 8;
+  const is_usdc = data.readUInt8(o) === 1;
+  return { user, agent, hash, status, amount, is_usdc };
 }
 
 async function pollConfirmed(sig: string, ms = 30000): Promise<boolean> {
@@ -88,16 +102,41 @@ export async function POST(req: Request) {
     const { blockhash } = await connection.getLatestBlockhash();
     tx.recentBlockhash = blockhash;
     tx.feePayer = orch.publicKey;
+    
     const data = new Uint8Array(9);
-    RESOLVE_DISC.forEach((b, i) => (data[i] = b));
-    data[8] = success ? 1 : 0;
-    tx.add(new TransactionInstruction({
-      keys: [
+    let keys: any[] = [];
+
+    if (state.is_usdc) {
+      RESOLVE_USDC_DISC.forEach((b, i) => (data[i] = b));
+      data[8] = success ? 1 : 0;
+      
+      const userATA = findATA(state.user, USDC_MINT);
+      const agentATA = findATA(state.agent, USDC_MINT);
+      const escrowATA = findATA(escrow, USDC_MINT);
+
+      keys = [
         { pubkey: escrow, isSigner: false, isWritable: true },
         { pubkey: orch.publicKey, isSigner: true, isWritable: true },
         { pubkey: state.user, isSigner: false, isWritable: true },
         { pubkey: state.agent, isSigner: false, isWritable: true },
-      ],
+        { pubkey: userATA, isSigner: false, isWritable: true },
+        { pubkey: agentATA, isSigner: false, isWritable: true },
+        { pubkey: escrowATA, isSigner: false, isWritable: true },
+        { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
+      ];
+    } else {
+      RESOLVE_DISC.forEach((b, i) => (data[i] = b));
+      data[8] = success ? 1 : 0;
+      keys = [
+        { pubkey: escrow, isSigner: false, isWritable: true },
+        { pubkey: orch.publicKey, isSigner: true, isWritable: true },
+        { pubkey: state.user, isSigner: false, isWritable: true },
+        { pubkey: state.agent, isSigner: false, isWritable: true },
+      ];
+    }
+
+    tx.add(new TransactionInstruction({
+      keys,
       programId: PROGRAM_ID,
       data: data as unknown as Buffer,
     }));

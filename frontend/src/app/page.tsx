@@ -65,7 +65,7 @@ function LiveFeed() {
       <div className="flex-1 bg-slate-950 rounded-lg p-3 font-mono text-xs space-y-2 border border-slate-800 overflow-y-auto">
         {rows.map((r, i) => (
           <div key={i} className="flex items-start gap-2">
-            <span className="text-slate-500 shrink-0">[{r.time}]</span>
+            <span className="text-slate-500 shrink-0" suppressHydrationWarning>[{r.time}]</span>
             <span className={`${r.color} font-semibold shrink-0`}>{r.label}</span>
             {r.link ? (
               <a href={r.link} target="_blank" rel="noopener noreferrer" className="text-slate-300 hover:text-green-400 break-all">{r.sub}</a>
