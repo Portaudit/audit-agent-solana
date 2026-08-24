@@ -1,5 +1,5 @@
-import Link from 'next/link';
 'use client';
+import Link from 'next/link';
 
 import WalletStatus from '@/components/WalletStatus';
 import AuditForm from '@/components/AuditForm';
