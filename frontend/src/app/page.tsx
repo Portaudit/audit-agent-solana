@@ -1,3 +1,4 @@
+import Link from 'next/link';
 'use client';
 
 import WalletStatus from '@/components/WalletStatus';
@@ -96,6 +97,7 @@ export default function Home() {
             <a href="https://www.visa.com/en-us/thought-leadership/innovation/agentic-payments-from-the-ground-up" target="_blank" rel="noopener noreferrer" className="underline decoration-dotted underline-offset-2 hover:opacity-80">aligned with Visa × Artemis & x402 $50B volume</a>
           </p>
         </div>
+        <Link href="/about" className="text-slate-400 hover:text-green-400 text-sm font-medium transition-colors">About</Link>
         <WalletStatus />
       </header>
 
