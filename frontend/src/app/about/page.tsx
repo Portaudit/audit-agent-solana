@@ -13,17 +13,14 @@ export default function AboutPage() {
       <div className="bg-slate-900 border border-slate-800 rounded-xl p-6 mb-8 shadow-xl">
         <h2 className="text-xl font-semibold text-green-400 mb-4">// The Mission</h2>
         <p className="text-slate-300 leading-relaxed mb-4">
-          As AI agents begin executing complex tasks and writing code autonomously, the payment infrastructure 
-          has not kept up. Agents cannot open bank accounts, and humans shouldn't have to manually verify 
+          As AI agents begin executing complex tasks and writing code autonomously, the payment infrastructure
+          has not kept up. Agents cannot open bank accounts, and humans shouldn't have to manually verify
           every line of code an agent writes before releasing payment.
         </p>
         <p className="text-slate-300 leading-relaxed">
-          <span className="text-white font-semibold">AuditAgent</span> solves this by creating trustless, 
-          hash-committed settlement rails on Solana. If the code is good, the agent gets paid instantly. 
+          <span className="text-white font-semibold">AuditAgent</span> solves this by creating trustless,
+          hash-committed settlement rails on Solana. If the code is good, the agent gets paid instantly.
           If the code is flawed, the funds auto-refund. No escrow agents, no disputes, just cryptography and code.
-        </p>
-        <p className="text-slate-300 leading-relaxed mt-4">
-          <span className="text-white font-semibold">The Founder:</span> Ishvir — founder of AuditAgent. Building trustless settlement rails so AI agents get paid only for verified work. Colosseum Eternal Sprint.
         </p>
       </div>
 
@@ -47,16 +44,7 @@ export default function AboutPage() {
             </li>
             <li>
               <span className="text-slate-500 block text-xs uppercase tracking-wider mb-1">X (Twitter)</span>
-              {/* ADD YOUR X HANDLE HERE */}
-              <a href="https://x.com/your_x_handle" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline break-all">@your_x_handle</a>
-            </li>
-            <li>
-              <span className="text-slate-500 block text-xs uppercase tracking-wider mb-1">Live App</span>
-              <a href="https://www.theauditagent.xyz" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline break-all">theauditagent.xyz</a>
-            </li>
-            <li>
-              <span className="text-slate-500 block text-xs uppercase tracking-wider mb-1">Email</span>
-              <a href="mailto:you@example.com" className="text-blue-400 hover:underline break-all">you@example.com</a>
+              <a href="https://x.com/theauditagent" target="_blank" rel="noopener noreferrer" className="text-blue-400 hover:underline break-all">@theauditagent</a>
             </li>
           </ul>
         </div>
