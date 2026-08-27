@@ -20,10 +20,24 @@ const FAIL_SAMPLE = `fn withdraw(amount: u64) {
   send_to_user(amount);
 }`;
 
-const PASS_SAMPLE = `fn withdraw(amount: u64, balance: &mut u64) {
-  if amount > *balance { return Err(WithdrawError::InsufficientBalance); }
-  *balance -= amount;
-  send_to_user(amount);
+const PASS_SAMPLE = `use anchor_lang::prelude::*;
+
+#[derive(Debug, thiserror::Error)]
+pub enum WithdrawError {
+    #[error("insufficient balance")]
+    InsufficientBalance,
+}
+
+pub fn withdraw(amount: u64, balance: &mut u64) -> Result<(), WithdrawError> {
+    // Check: balance must cover the withdrawal
+    if amount == 0 || amount > *balance {
+        return Err(WithdrawError::InsufficientBalance);
+    }
+    // Effect: deduct the balance first (CEI pattern)
+    *balance = balance.checked_sub(amount).ok_or(WithdrawError::InsufficientBalance)?;
+    // Interaction: external call last, with success check
+    require!(send_to_user(amount), WithdrawError::InsufficientBalance);
+    Ok(())
 }`;
 
 async function sha256Hex(input: string): Promise<string> {
