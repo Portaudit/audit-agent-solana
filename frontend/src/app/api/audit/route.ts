@@ -77,6 +77,7 @@ export async function POST(req: Request) {
 
     let success = false;
     let result: z.infer<typeof AuditSchema> | null = null;
+    let auditError: string | null = null;
     try {
       const llm = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
@@ -89,13 +90,23 @@ export async function POST(req: Request) {
           ],
         }),
       }).then((r) => r.json());
-      const text = llm.choices?.[0]?.message?.content ?? '';
+      if (llm?.error) auditError = 'OpenRouter error: ' + (llm.error?.message || JSON.stringify(llm.error));
+      const rawText = llm.choices?.[0]?.message?.content ?? '';
+      const cleaned = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
+      const si = cleaned.indexOf('{');
+      const ei = cleaned.lastIndexOf('}');
+      const text = si >= 0 && ei > si ? cleaned.slice(si, ei + 1) : cleaned;
       const parsed = AuditSchema.safeParse(JSON.parse(text));
       if (parsed.success) {
         result = parsed.data;
         success = parsed.data.passed && parsed.data.confidence >= 0.7;
+      } else {
+        auditError = auditError || ('Schema mismatch: ' + JSON.stringify(parsed.error?.issues?.slice(0, 2)));
       }
-    } catch { success = false; }
+    } catch (err: any) {
+      success = false;
+      auditError = auditError || ('Audit exception: ' + (err?.message || String(err)));
+    }
 
     const orch = loadOrchestrator();
     const tx = new Transaction();
@@ -153,7 +164,7 @@ export async function POST(req: Request) {
     }
     await pollConfirmed(sig as string);
 
-    return NextResponse.json({ success, result, resolveSig: sig });
+    return NextResponse.json({ success, result, resolveSig: sig, auditError });
   } catch (e: any) {
     return NextResponse.json({ error: e?.message || 'audit failed' }, { status: 500 });
   }

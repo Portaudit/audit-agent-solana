@@ -386,6 +386,7 @@ export default function AuditForm() {
                 </a>
               )}
               {verdict.error && <p className="text-[10px] text-red-300">{verdict.error}</p>}
+              {verdict.auditError && <p className="text-[10px] text-orange-300">AI gate: {verdict.auditError}</p>}
             </div>
           )}
         </div>
