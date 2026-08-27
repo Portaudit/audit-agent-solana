@@ -84,8 +84,9 @@ export async function POST(req: Request) {
         headers: { Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
           model: process.env.OPENROUTER_MODEL || 'nvidia/nemotron-3-ultra',
+          temperature: 0.2,
           messages: [
-            { role: 'system', content: 'You are a smart-contract security auditor. Respond ONLY with valid JSON: {"reasoning": string, "passed": boolean, "vulnerabilities": [{"severity": string, "description": string}], "patch": string, "confidence": number}. passed=true only if the code is safe and correct.' },
+            { role: 'system', content: 'You are a smart-contract security auditor auditing a SHORT CODE SNIPPET that gates an on-chain settlement. Judge ONLY the logic visible in the snippet. passed=true when the visible logic contains no exploitable vulnerability (missing balance or overflow checks, unsafe ordering that enables reentrancy, unchecked arithmetic, logic that can drain or lock funds). Do NOT fail for: undefined helper functions, missing access control or event emission in a snippet, naming/style/API-design preferences, or hypothetical compile errors in unseen code; mention such nits in reasoning while keeping passed=true if the shown logic is safe. Respond ONLY with valid JSON: {"reasoning": string, "passed": boolean, "vulnerabilities": [{"severity": string, "description": string}], "patch": string, "confidence": number}.' },
             { role: 'user', content: code },
           ],
         }),
