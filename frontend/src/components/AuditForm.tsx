@@ -21,7 +21,7 @@ const FAIL_SAMPLE = `fn withdraw(amount: u64) {
 }`;
 
 const PASS_SAMPLE = `fn withdraw(amount: u64, balance: &mut u64) {
-  if amount > *balance { panic!("insufficient balance"); }
+  if amount > *balance { return Err(WithdrawError::InsufficientBalance); }
   *balance -= amount;
   send_to_user(amount);
 }`;
