@@ -100,6 +100,7 @@ export async function POST(req: Request) {
       const parsed = AuditSchema.safeParse(JSON.parse(text));
       if (parsed.success) {
         result = parsed.data;
+        if (result.confidence > 1) result.confidence = result.confidence / 100;
         success = parsed.data.passed && parsed.data.confidence >= 0.7;
       } else {
         auditError = auditError || ('Schema mismatch: ' + JSON.stringify(parsed.error?.issues?.slice(0, 2)));
