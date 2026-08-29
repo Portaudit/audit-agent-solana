@@ -79,7 +79,9 @@ export async function POST(req: Request) {
     let result: z.infer<typeof AuditSchema> | null = null;
     let auditError: string | null = null;
     try {
-      const llm = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+      let llm: any = null;
+    for (let attempt = 0; attempt < 3; attempt++) {
+      llm = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
         headers: { Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -91,6 +93,10 @@ export async function POST(req: Request) {
           ],
         }),
       }).then((r) => r.json());
+      if (!llm?.error && llm?.choices?.[0]?.message?.content) break;
+      auditError = 'OpenRouter error: ' + (llm?.error?.message || 'Provider returned error');
+      await new Promise((r2) => setTimeout(r2, 1500));
+    }
       if (llm?.error) auditError = 'OpenRouter error: ' + (llm.error?.message || JSON.stringify(llm.error));
       const rawText = llm.choices?.[0]?.message?.content ?? '';
       const cleaned = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();

@@ -25,3 +25,12 @@
 - ✅ Dual balance badges (SOL + USDC)
 - ✅ Anti-wash-trade guard
 - ✅ About page
+
+## W2 Recording Session — Live Production (auditor: Ling 3.0 Flash via OpenRouter)
+| Event | Rail | Verdict | Settlement Tx |
+|---|---|---|---|
+| PASS — funds released to agent | USDC | 95% conf | 4tDgDPAguCEsoYVr2Cu3uin2... |
+| PASS — funds released to agent | USDC | 95% conf | 3bK2c6GRZALK7DDz3iHiLZhS... |
+| FAIL — vulnerable code auto-refunded | USDC | 95% conf | 3Z3pFtAQP7L2MD9z3AzHK6Bw... |
+| FAIL-CLOSED — provider 429, user refunded | USDC | safe default | VgK4FPcBRYTj65bNDXLkLLYT... |
+| CANCEL — escape hatch refund | USDC | user-initiated | 518WtzZ2p44i4pNEcqwYwtev... |
