@@ -3,9 +3,11 @@ import Link from 'next/link';
 
 import WalletStatus from '@/components/WalletStatus';
 import AuditForm from '@/components/AuditForm';
-import { useConnection } from '@solana/wallet-adapter-react';
+import { useConnection, useAnchorWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
+import { Program, AnchorProvider } from '@coral-xyz/anchor';
 import { useEffect, useState } from 'react';
+import idl from '../idl.json';
 
 const PROGRAM_ID = new PublicKey('QZcT1TGL1jePJumCEhbqpw9QD8F4svxQRPjWSUbhZHh');
 
@@ -18,10 +20,10 @@ function fmt(sec?: number | null) {
 function seedRows(): Row[] {
   const t = (m: number) => fmt(Date.now() / 1000 - m * 60);
   return [
-    { time: t(4), label: 'Funded:', sub: 'Escrow locked (0.05 SOL) for dummy.rs', color: 'text-blue-400' },
-    { time: t(3), label: 'Auditing:', sub: 'Nemotron 3 Ultra analyzing…', color: 'text-yellow-400' },
-    { time: t(2), label: 'Validating:', sub: 'Zod schema & local compile passed.', color: 'text-purple-400' },
-    { time: t(1), label: 'Settled:', sub: '0.05 SOL released to Agent Wallet.', color: 'text-green-400' },
+    { time: t(4), label: 'Funded:', sub: 'Escrow locked (0.05 SOL)', color: 'text-blue-400' },
+    { time: t(3), label: 'Auditing:', sub: 'Ling 3.0 Flash / Gemini 2.5 analyzing…', color: 'text-yellow-400' },
+    { time: t(2), label: 'Validating:', sub: 'Hash-commitment verified.', color: 'text-purple-400' },
+    { time: t(1), label: 'Settled:', sub: 'Funds released to Agent Wallet.', color: 'text-green-400' },
   ];
 }
 
@@ -80,36 +82,59 @@ function LiveFeed() {
   );
 }
 
-// 🛡️ REAL W3 RECEIPTS (Hallucinations killed)
-const W3_TASKS = [
-  { 
-    id: '1', 
-    title: 'Live Demo Prop (Settle on camera)', 
-    reward: '0.05 SOL', 
-    status: 'Open', 
-    agent: 'Ling 3.0 Flash / Gemini 2.5 Flash',
-    tx: '2GW76hDM6cYJ1RU6SfqRoVckw12k2zQoXvdvrr5DrLwfm6MxsyfhcUXeAjJsCdG5vgx4n3urZkY2zfXGdVjBrXhw',
-    color: 'text-yellow-400'
-  },
-  { 
-    id: '2', 
-    title: 'FIRST AUTONOMOUS PASS (W3 Victory)', 
-    reward: '0.05 SOL', 
-    status: 'Completed', 
-    agent: 'Ling 3.0 Flash (849ms)',
-    tx: 'ce3XmM8aCAafcgALJtiCX397betgojr5gLVe7XEhLcJz2uXXcBEvF4MyvypPTsG8ZUgysjiYU6HeFUihXcpQaZx',
-    color: 'text-green-400'
-  },
-  { 
-    id: '3', 
-    title: 'Fail-Closed Refund (Audit unavailable)', 
-    reward: '0.05 SOL', 
-    status: 'Refunded', 
-    agent: 'Security Protocol',
-    tx: '5BrD6CkRRZLVCYKnqgmzBk15ZdgcNx3vFBavKk6K2h2g1hbUuMyjvND3dV1qrNcSwD4hbJC3VkNWwe7bmURNVFae',
-    color: 'text-blue-400'
-  },
-];
+function Marketplace() {
+  const { connection } = useConnection();
+  const wallet = useAnchorWallet();
+  const [tasks, setTasks] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (!connection) return;
+    const dummyWallet = {
+      publicKey: PublicKey.default,
+      signTransaction: async () => ({} as any),
+      signAllTransactions: async () => []
+    };
+    const provider = new AnchorProvider(connection, (wallet as any) ?? dummyWallet, { commitment: 'confirmed' });
+    const program = new Program(idl as any, PROGRAM_ID, provider);
+
+    const fetchTasks = async () => {
+      try {
+        const allTasks = await program.account.taskEscrow.all();
+        // Anti-zombie filter: only show tasks with amount > 0
+        setTasks(allTasks.filter(t => t.account.status.pending !== undefined && !t.account.amount.isZero()));
+      } catch (e) {
+        console.error("Marketplace fetch error:", e);
+      }
+    };
+
+    fetchTasks();
+    const interval = setInterval(fetchTasks, 5000);
+    return () => clearInterval(interval);
+  }, [connection, wallet]);
+
+  return (
+    <div className="mt-4 bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-2xl">
+       <h2 className="text-sm font-semibold text-slate-200 mb-3">Live Escrow Market <span className="text-[10px] text-slate-500 font-normal">(Real On-Chain State)</span></h2>
+       <div className="space-y-2 max-h-64 overflow-y-auto">
+          {tasks.length === 0 && <p className="text-[11px] text-slate-500 text-center py-4">No pending escrows. Submit an audit to create one.</p>}
+          {tasks.map((task, i) => {
+             const escrow = task.account;
+             const solAmount = (escrow.amount as any).toNumber() / 1e9;
+             return (
+                <div key={i} className="bg-slate-950 border border-slate-800 rounded-lg p-3">
+                   <p className="text-xs font-medium text-slate-300 truncate">Hash: {escrow.taskHash.slice(0, 16)}...</p>
+                   <div className="flex justify-between mt-1">
+                      <p className="text-[10px] text-slate-500">Agent: <span className="text-slate-400 truncate max-w-[100px] inline-block align-bottom">{escrow.agentWallet.toBase58().slice(0,8)}...</span></p>
+                      <p className="text-xs font-bold text-yellow-400">{solAmount} SOL</p>
+                   </div>
+                   <p className="text-[10px] text-yellow-400 mt-1 font-semibold">⏳ Pending Bot Audit</p>
+                </div>
+             );
+          })}
+       </div>
+    </div>
+  );
+}
 
 export default function Home() {
   return (
@@ -140,25 +165,7 @@ export default function Home() {
       <section className="w-full max-w-7xl flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4 mb-3">
         <div className="flex flex-col">
           <AuditForm />
-          
-          {/* W3 MARKETPLACE & HISTORY */}
-          <div className="mt-4 bg-slate-900 border border-slate-800 rounded-xl p-4 shadow-2xl">
-             <h2 className="text-sm font-semibold text-slate-200 mb-3">Marketplace & History <span className="text-[10px] text-slate-500 font-normal">(W3 Autonomous Loop)</span></h2>
-             <div className="space-y-2">
-                {W3_TASKS.map((task) => (
-                   <div key={task.id} className="bg-slate-950 border border-slate-800 rounded-lg p-3 flex justify-between items-center hover:border-slate-700 transition-colors">
-                      <div>
-                         <p className="text-xs font-medium text-slate-300">{task.title}</p>
-                         <p className="text-[10px] text-slate-500 mt-0.5">Agent: <span className="text-slate-400">{task.agent}</span></p>
-                      </div>
-                      <div className="text-right">
-                         <p className="text-xs font-bold text-slate-200">{task.reward}</p>
-                         <a href={`https://explorer.solana.com/tx/${task.tx}?cluster=devnet`} target="_blank" rel="noopener noreferrer" className={`text-[10px] font-bold ${task.color} hover:underline`}>{task.status}</a>
-                      </div>
-                   </div>
-                ))}
-             </div>
-          </div>
+          <Marketplace />
         </div>
         <LiveFeed />
       </section>
