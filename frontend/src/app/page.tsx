@@ -99,9 +99,9 @@ function Marketplace() {
 
     const fetchTasks = async () => {
       try {
-        const allTasks = await program.account.taskEscrow.all();
+        const allTasks = await (program.account as any).taskEscrow.all();
         // Anti-zombie filter: only show tasks with amount > 0
-        setTasks(allTasks.filter(t => t.account.status.pending !== undefined && !t.account.amount.isZero()));
+        setTasks(allTasks.filter((t: any) => t.account.status.pending !== undefined && !t.account.amount.isZero()));
       } catch (e) {
         console.error("Marketplace fetch error:", e);
       }
