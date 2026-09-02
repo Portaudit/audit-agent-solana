@@ -60,8 +60,7 @@ async function run() {
                 
                 const hash = crypto.createHash('sha256').update(SAFE_PAYLOAD).digest('hex');
                 if (hash !== escrow.taskHash) {
-                    console.log("   ❌ Hash mismatch vs commitment! Triggering refund.");
-                    await resolveTask(program, task.publicKey, escrow.user, escrow.agentWallet, false, escrow.isUsdc);
+                    console.log("   ⏭ Not my commitment (website flow owns it). Skipping.");
                     continue;
                 }
                 console.log("   🔐 Commitment verified: revealed work matches on-chain hash.");
