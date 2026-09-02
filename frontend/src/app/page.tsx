@@ -7,7 +7,7 @@ import { useConnection, useAnchorWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
 import { Program, AnchorProvider } from '@coral-xyz/anchor';
 import { useEffect, useState } from 'react';
-import idl from '../idl.json';
+import idl from '../../idl.json';
 
 const PROGRAM_ID = new PublicKey('QZcT1TGL1jePJumCEhbqpw9QD8F4svxQRPjWSUbhZHh');
 
@@ -95,7 +95,7 @@ function Marketplace() {
       signAllTransactions: async () => []
     };
     const provider = new AnchorProvider(connection, (wallet as any) ?? dummyWallet, { commitment: 'confirmed' });
-    const program = new Program(idl as any, PROGRAM_ID, provider);
+    const program = new Program(idl as any, provider);
 
     const fetchTasks = async () => {
       try {
