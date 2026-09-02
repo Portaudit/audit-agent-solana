@@ -11,3 +11,7 @@ test-ledger/
 # Node
 node_modules/
 orchestrator.json
+
+# orchestrator secrets
+orchestrator/.env
+orchestrator/orchestrator-keypair.json
