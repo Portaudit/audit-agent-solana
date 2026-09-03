@@ -3,6 +3,7 @@ import Link from 'next/link';
 
 import WalletStatus from '@/components/WalletStatus';
 import AuditForm from '@/components/AuditForm';
+import ReputationBoard from '@/components/ReputationBoard';
 import { useConnection, useAnchorWallet } from '@solana/wallet-adapter-react';
 import { PublicKey } from '@solana/web3.js';
 import { Program, AnchorProvider } from '@coral-xyz/anchor';
@@ -166,6 +167,7 @@ export default function Home() {
         <div className="flex flex-col">
           <AuditForm />
           <Marketplace />
+          <ReputationBoard />
         </div>
         <LiveFeed />
       </section>
