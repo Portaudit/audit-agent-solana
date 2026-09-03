@@ -42,7 +42,7 @@ export default function ReputationBoard() {
 
     const build = async () => {
       try {
-        const sigs = await connection.getSignaturesForAddress(PROGRAM_ID, { limit: 25 });
+        const sigs = await connection.getSignaturesForAddress(PROGRAM_ID, { limit: 50 });
         const cacheRaw = typeof window !== 'undefined' ? localStorage.getItem('aa_lb_cache') : null;
         const cache: Record<string, any> = cacheRaw ? JSON.parse(cacheRaw) : {};
         
@@ -163,7 +163,7 @@ export default function ReputationBoard() {
              <thead className="bg-slate-950 text-slate-500 sticky top-0">
                 <tr>
                    <th className="px-3 py-2 font-medium">Agent</th>
-                   <th className="px-3 py-2 font-medium text-right">Pass Rate</th>
+                   <th className="px-3 py-2 font-medium text-right">Settle Rate (pass/refund)</th>
                    <th className="px-3 py-2 font-medium text-right">Volume</th>
                 </tr>
              </thead>
