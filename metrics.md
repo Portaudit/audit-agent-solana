@@ -49,3 +49,14 @@
   - 5BrD6CkRRZLVCYKnqgmzBk15ZdgcNx3vFBavKk6K2h2g1hbUuMyjvND3dV1qrNcSwD4hbJC3VkNWwe7bmURNVFae
 - Resilience: OpenRouter (Ling) primary + Google Gemini 2.5 Flash direct fallback, exponential backoff
 - Orchestrator wallet: 5kydHp11SzmqyHMawUJPVma9WRCh7YLzJSLLJGuWPbrH
+
+## W3+ — USDC RAIL PROVEN (website flow, dual-auditor)
+- First end-to-end USDC trustless settlement via theauditagent.xyz:
+  escrow lock (0.05 USDC) -> AI audit PASSED (confidence 95%, CEI/atomicity reasoning) -> resolve_task_usdc released funds to agent ATA; user wallet debited 0.05 USDC
+- Recent program signatures (newest first):
+3tF4xiUZrHjLzF1AnuRrQ1xQtLZrT2MRXsh9hPqfKCDyWD7EQJ9r3eamJC5nmB8JQYNbdg2jjqMFm7hsy7supiDy
+dv5r41jzgHJnV8Y86nvn81Hi2apzNEDXu4UvX38ca5PUeFFgBFVzMcVYoghaLnsmases4btyepLaBYwA7LRkhdg
+5Dkj81EJTvmvy3DutigrT9ByyKrXpU2jmvzYNjUM5XLqSNGmfnTHzwTb4nXqSfd3BccEqAGtnDVWnAJmLS9Xyt7c
+biUUgSSW7DgxZGL4LaycozcSPtraXjunkGd6tfyksCgCrTEuacTRx7VmQDvx9eFvCkBpvj7NzxRJXmnJqEELTcE
+2yyRjFz6ZFe6mKjA9T8sCQV5xxgExUJbUKP4YUC9hvEUfgEDQfjYNePMECP5okkpB4wtBPPLbLKqu5STAMm3UJw9
+2mduxw323Jmbk5uTkQf2X9VoKCff2i7abgMp86uN6zVGSNsCYitKma87KDxjT6iJd331CncgPRmnEe5omZsTvFDu

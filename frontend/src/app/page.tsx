@@ -119,13 +119,13 @@ function Marketplace() {
           {tasks.length === 0 && <p className="text-[11px] text-slate-500 text-center py-4">No pending escrows. Submit an audit to create one.</p>}
           {tasks.map((task, i) => {
              const escrow = task.account;
-             const solAmount = (escrow.amount as any).toNumber() / 1e9;
+             const isUsdc = escrow.isUsdc === true; const amt = (escrow.amount as any).toNumber() / (isUsdc ? 1e6 : 1e9);
              return (
                 <div key={i} className="bg-slate-950 border border-slate-800 rounded-lg p-3">
                    <p className="text-xs font-medium text-slate-300 truncate">Hash: {escrow.taskHash.slice(0, 16)}...</p>
                    <div className="flex justify-between mt-1">
                       <p className="text-[10px] text-slate-500">Agent: <span className="text-slate-400 truncate max-w-[100px] inline-block align-bottom">{escrow.agentWallet.toBase58().slice(0,8)}...</span></p>
-                      <p className="text-xs font-bold text-yellow-400">{solAmount} SOL</p>
+                      <p className="text-xs font-bold text-yellow-400">{amt} {isUsdc ? 'USDC' : 'SOL'}</p>
                    </div>
                    <p className="text-[10px] text-yellow-400 mt-1 font-semibold">⏳ Pending Bot Audit</p>
                 </div>
