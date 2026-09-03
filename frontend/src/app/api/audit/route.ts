@@ -18,6 +18,8 @@ const AuditSchema = z.object({
   patch: z.string(), confidence: z.number(),
 });
 
+const SYSTEM_PROMPT = 'You are a smart-contract security auditor auditing a SHORT CODE SNIPPET that gates an on-chain settlement. Assume Solana/Anchor runtime semantics: when any instruction or require! fails, the entire transaction atomically reverts and all prior state changes roll back. Judge ONLY the logic visible in the snippet. passed=true when the visible logic contains no exploitable vulnerability (missing balance or overflow checks, unsafe ordering that enables reentrancy, unchecked arithmetic, logic that can drain or lock funds). Do NOT fail for: undefined helper functions, missing access control or event emission in a snippet, naming/style/API-design preferences, or hypothetical compile errors in unseen code; mention such nits in reasoning while keeping passed=true if the shown logic is safe. Respond ONLY with valid JSON: {"reasoning": string, "passed": boolean, "vulnerabilities": [{"severity": string, "description": string}], "patch": string, "confidence": number}.';
+
 function loadOrchestrator(): Keypair {
   const secret = process.env.ORCHESTRATOR_SECRET;
   if (!secret) throw new Error('ORCHESTRATOR_SECRET not set');
@@ -80,23 +82,47 @@ export async function POST(req: Request) {
     let auditError: string | null = null;
     try {
       let llm: any = null;
-    for (let attempt = 0; attempt < 3; attempt++) {
-      llm = await fetch('https://openrouter.ai/api/v1/chat/completions', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          model: process.env.OPENROUTER_MODEL || 'nvidia/nemotron-3-ultra-550b-a55b:free',
-          temperature: 0.2,
-          messages: [
-            { role: 'system', content: 'You are a smart-contract security auditor auditing a SHORT CODE SNIPPET that gates an on-chain settlement. Assume Solana/Anchor runtime semantics: when any instruction or require! fails, the entire transaction atomically reverts and all prior state changes roll back. Judge ONLY the logic visible in the snippet. passed=true when the visible logic contains no exploitable vulnerability (missing balance or overflow checks, unsafe ordering that enables reentrancy, unchecked arithmetic, logic that can drain or lock funds). Do NOT fail for: undefined helper functions, missing access control or event emission in a snippet, naming/style/API-design preferences, or hypothetical compile errors in unseen code; mention such nits in reasoning while keeping passed=true if the shown logic is safe. Respond ONLY with valid JSON: {"reasoning": string, "passed": boolean, "vulnerabilities": [{"severity": string, "description": string}], "patch": string, "confidence": number}.' },
-            { role: 'user', content: code },
-          ],
-        }),
-      }).then((r) => r.json());
-      if (!llm?.error && llm?.choices?.[0]?.message?.content) break;
-      auditError = 'OpenRouter error: ' + (llm?.error?.message || 'Provider returned error');
-      await new Promise((r2) => setTimeout(r2, 1500));
-    }
+      for (let attempt = 0; attempt < 3; attempt++) {
+        llm = await fetch('https://openrouter.ai/api/v1/chat/completions', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: process.env.OPENROUTER_MODEL || 'inclusionai/ling-3.0-flash',
+            temperature: 0.2,
+            messages: [
+              { role: 'system', content: SYSTEM_PROMPT },
+              { role: 'user', content: code },
+            ],
+          }),
+        }).then((r) => r.json());
+        if (!llm?.error && llm?.choices?.[0]?.message?.content) break;
+        auditError = 'OpenRouter error: ' + (llm?.error?.message || 'Provider returned error');
+        await new Promise((r2) => setTimeout(r2, 1500));
+      }
+
+      // 🛡️ GEMINI 2.5 FALLBACK — provider diversification: if OpenRouter storms, Google answers
+      if (!llm?.choices?.[0]?.message?.content && process.env.GEMINI_API_KEY) {
+        try {
+          const gem = await fetch(
+            `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key=${process.env.GEMINI_API_KEY}`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ contents: [{ parts: [{ text: SYSTEM_PROMPT + '\n\nCode:\n' + code }] }] }),
+            }
+          ).then((r) => r.json());
+          const gemText = gem?.candidates?.[0]?.content?.parts?.[0]?.text;
+          if (gemText) {
+            llm = { choices: [{ message: { content: gemText } }] };
+            auditError = null;
+          } else {
+            auditError = (auditError || '') + ' | Gemini fallback: no candidates returned';
+          }
+        } catch (gemErr: any) {
+          auditError = (auditError || '') + ' | Gemini fallback error: ' + (gemErr?.message || String(gemErr));
+        }
+      }
+
       if (llm?.error) auditError = 'OpenRouter error: ' + (llm.error?.message || JSON.stringify(llm.error));
       const rawText = llm.choices?.[0]?.message?.content ?? '';
       const cleaned = rawText.replace(/```json/gi, '').replace(/```/g, '').trim();
@@ -121,14 +147,14 @@ export async function POST(req: Request) {
     const { blockhash } = await connection.getLatestBlockhash();
     tx.recentBlockhash = blockhash;
     tx.feePayer = orch.publicKey;
-    
+
     const data = new Uint8Array(9);
     let keys: any[] = [];
 
     if (state.is_usdc) {
       RESOLVE_USDC_DISC.forEach((b, i) => (data[i] = b));
       data[8] = success ? 1 : 0;
-      
+
       const userATA = findATA(state.user, USDC_MINT);
       const agentATA = findATA(state.agent, USDC_MINT);
       const escrowATA = findATA(escrow, USDC_MINT);
