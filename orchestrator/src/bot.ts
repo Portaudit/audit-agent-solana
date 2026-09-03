@@ -126,6 +126,7 @@ async function resolveTask(program: anchor.Program, escrowPubkey: PublicKey, use
                 orchestrator: orchestrator.publicKey,
                 user: user,
                 agentWallet: agentWallet,
+                feeWallet: new PublicKey("6qz9eLcCJgeMHraij2Dtkqoz2EZQaDvE4Jfh5sSjokaB"),
             })
             .rpc();
         console.log(`   🔗 Settled: https://explorer.solana.com/tx/${tx}?cluster=devnet`);

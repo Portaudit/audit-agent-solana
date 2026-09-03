@@ -9,6 +9,8 @@ const RESOLVE_USDC_DISC = [135, 5, 200, 120, 68, 243, 252, 42];
 const TOKEN_PROGRAM_ID = new PublicKey('TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA');
 const SPL_ASSOCIATED_TOKEN_ACCOUNT_PROGRAM_ID = new PublicKey('ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL');
 const USDC_MINT = new PublicKey('4zMMC9srt5Ri5X14GAgXhaHii3GnPAEERYPJgZJDncDU'); // Devnet USDC
+const FEE_WALLET = new PublicKey('6qz9eLcCJgeMHraij2Dtkqoz2EZQaDvE4Jfh5sSjokaB');
+const FEE_USDC_ATA = new PublicKey('9FQzaKqtPccfgnj8GJi5DMuWn1Zezz37PAQfgP9JxaRZ');
 
 const connection = new Connection('https://api.devnet.solana.com', 'confirmed');
 
@@ -167,6 +169,7 @@ export async function POST(req: Request) {
         { pubkey: userATA, isSigner: false, isWritable: true },
         { pubkey: agentATA, isSigner: false, isWritable: true },
         { pubkey: escrowATA, isSigner: false, isWritable: true },
+        { pubkey: FEE_USDC_ATA, isSigner: false, isWritable: true },
         { pubkey: TOKEN_PROGRAM_ID, isSigner: false, isWritable: false },
       ];
     } else {
@@ -177,6 +180,7 @@ export async function POST(req: Request) {
         { pubkey: orch.publicKey, isSigner: true, isWritable: true },
         { pubkey: state.user, isSigner: false, isWritable: true },
         { pubkey: state.agent, isSigner: false, isWritable: true },
+        { pubkey: FEE_WALLET, isSigner: false, isWritable: true },
       ];
     }
 

@@ -305,6 +305,11 @@
         {
           "name": "agent_wallet",
           "writable": true
+        },
+        {
+          "name": "fee_wallet",
+          "writable": true,
+          "address": "6qz9eLcCJgeMHraij2Dtkqoz2EZQaDvE4Jfh5sSjokaB"
         }
       ],
       "args": [
@@ -376,6 +381,11 @@
           "writable": true
         },
         {
+          "name": "fee_token_account",
+          "writable": true,
+          "address": "9FQzaKqtPccfgnj8GJi5DMuWn1Zezz37PAQfgP9JxaRZ"
+        },
+        {
           "name": "token_program",
           "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
         }
@@ -413,6 +423,11 @@
       "code": 6001,
       "name": "InvalidPaymentMethod",
       "msg": "Invalid payment method for this instruction."
+    },
+    {
+      "code": 6002,
+      "name": "MathOverflow",
+      "msg": "Math overflow in fee calculation."
     }
   ],
   "types": [

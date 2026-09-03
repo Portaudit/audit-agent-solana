@@ -3,6 +3,13 @@ use anchor_spl::token::{self, Token, TokenAccount, Transfer};
 
 declare_id!("QZcT1TGL1jePJumCEhbqpw9QD8F4svxQRPjWSUbhZHh");
 
+/// Protocol fee: 200 bps = 2%, taken only on successful settlement.
+pub const FEE_BPS: u64 = 200;
+/// Protocol treasury. Hardcoded so clients can never redirect fees.
+pub const FEE_WALLET: Pubkey = pubkey!("6qz9eLcCJgeMHraij2Dtkqoz2EZQaDvE4Jfh5sSjokaB");
+/// Treasury devnet USDC ATA (hardcoded, computed off-chain).
+pub const FEE_USDC_ATA: Pubkey = pubkey!("9FQzaKqtPccfgnj8GJi5DMuWn1Zezz37PAQfgP9JxaRZ");
+
 #[program]
 pub mod agent_payrails {
     use super::*;
@@ -70,13 +77,20 @@ pub mod agent_payrails {
         let amount = escrow.amount;
         escrow.status = if success { TaskStatus::Completed } else { TaskStatus::Refunded };
 
-        let destination = if success {
-            ctx.accounts.agent_wallet.to_account_info()
+        if success {
+            let fee = amount
+                .checked_mul(FEE_BPS)
+                .ok_or(error!(ErrorCode::MathOverflow))?
+                / 10_000;
+            let agent_cut = amount - fee;
+            **escrow.to_account_info().try_borrow_mut_lamports()? -= fee;
+            **ctx.accounts.fee_wallet.to_account_info().try_borrow_mut_lamports()? += fee;
+            **escrow.to_account_info().try_borrow_mut_lamports()? -= agent_cut;
+            **ctx.accounts.agent_wallet.to_account_info().try_borrow_mut_lamports()? += agent_cut;
         } else {
-            ctx.accounts.user.to_account_info()
-        };
-        **escrow.to_account_info().try_borrow_mut_lamports()? -= amount;
-        **destination.try_borrow_mut_lamports()? += amount;
+            **escrow.to_account_info().try_borrow_mut_lamports()? -= amount;
+            **ctx.accounts.user.to_account_info().try_borrow_mut_lamports()? += amount;
+        }
         Ok(())
     }
 
@@ -88,24 +102,47 @@ pub mod agent_payrails {
         let amount = escrow.amount;
         escrow.status = if success { TaskStatus::Completed } else { TaskStatus::Refunded };
 
-        let to_ata = if success {
-            ctx.accounts.agent_token_account.to_account_info()
-        } else {
-            ctx.accounts.user_token_account.to_account_info()
-        };
-
         let user_key = escrow.user;
         let bump = ctx.bumps.escrow;
         let signer_seeds: &[&[&[u8]]] = &[&[b"escrow", user_key.as_ref(), &[bump]]];
 
-        let cpi_accounts = Transfer {
-            from: ctx.accounts.escrow_token_account.to_account_info(),
-            to: to_ata,
-            authority: escrow.to_account_info(),
-        };
-        let cpi_program = ctx.accounts.token_program.key();
-        let cpi_ctx = CpiContext::new_with_signer(cpi_program, cpi_accounts, signer_seeds);
-        token::transfer(cpi_ctx, amount)?;
+        if success {
+            let fee = amount
+                .checked_mul(FEE_BPS)
+                .ok_or(error!(ErrorCode::MathOverflow))?
+                / 10_000;
+            let agent_cut = amount - fee;
+
+            let fee_xfer = Transfer {
+                from: ctx.accounts.escrow_token_account.to_account_info(),
+                to: ctx.accounts.fee_token_account.to_account_info(),
+                authority: escrow.to_account_info(),
+            };
+            token::transfer(
+                CpiContext::new_with_signer(ctx.accounts.token_program.key(), fee_xfer, signer_seeds),
+                fee,
+            )?;
+
+            let agent_xfer = Transfer {
+                from: ctx.accounts.escrow_token_account.to_account_info(),
+                to: ctx.accounts.agent_token_account.to_account_info(),
+                authority: escrow.to_account_info(),
+            };
+            token::transfer(
+                CpiContext::new_with_signer(ctx.accounts.token_program.key(), agent_xfer, signer_seeds),
+                agent_cut,
+            )?;
+        } else {
+            let refund_xfer = Transfer {
+                from: ctx.accounts.escrow_token_account.to_account_info(),
+                to: ctx.accounts.user_token_account.to_account_info(),
+                authority: escrow.to_account_info(),
+            };
+            token::transfer(
+                CpiContext::new_with_signer(ctx.accounts.token_program.key(), refund_xfer, signer_seeds),
+                amount,
+            )?;
+        }
         Ok(())
     }
 
@@ -203,6 +240,8 @@ pub struct ResolveTask<'info> {
     pub user: SystemAccount<'info>,
     #[account(mut)]
     pub agent_wallet: SystemAccount<'info>,
+    #[account(mut, address = FEE_WALLET)]
+    pub fee_wallet: SystemAccount<'info>,
 }
 
 #[derive(Accounts)]
@@ -224,6 +263,8 @@ pub struct ResolveTaskUsdc<'info> {
     pub agent_token_account: Account<'info, TokenAccount>,
     #[account(mut)]
     pub escrow_token_account: Account<'info, TokenAccount>,
+    #[account(mut, address = FEE_USDC_ATA)]
+    pub fee_token_account: Account<'info, TokenAccount>,
     pub token_program: Program<'info, Token>,
 }
 
@@ -266,4 +307,6 @@ pub enum ErrorCode {
     TaskAlreadyResolved,
     #[msg("Invalid payment method for this instruction.")]
     InvalidPaymentMethod,
+    #[msg("Math overflow in fee calculation.")]
+    MathOverflow,
 }
