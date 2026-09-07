@@ -1,0 +1,59 @@
+name: AuditAgent CI Gate
+on:
+  pull_request:
+    paths:
+      - 'programs/**/*.rs'
+      - 'examples/**/*.rs'
+      - 'orchestrator/**/*.ts'
+permissions:
+  contents: read
+  pull-requests: write
+jobs:
+  audit:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Get PR Patch
+        run: |
+          curl -s -H "Accept: application/vnd.github.v3.diff" \
+            -H "Authorization: token ${{ secrets.GITHUB_TOKEN }}" \
+            "https://api.github.com/repos/${{ github.repository }}/pulls/${{ github.event.pull_request.number }}" \
+            > pr.diff
+
+      - name: Run AI Audit
+        id: ai_audit
+        env:
+          OPENROUTER_API_KEY: ${{ secrets.OPENROUTER_API_KEY }}
+          OPENROUTER_MODEL: ${{ secrets.OPENROUTER_MODEL }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PR_DIFF_FILE: pr.diff
+        run: node scripts/ci-audit.mjs > audit-result.txt
+
+      - name: Post Comment
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const result = fs.readFileSync('audit-result.txt', 'utf8');
+            const verdict = result.includes('VERDICT: FAIL') ? 'FAIL' : 'PASS';
+            const emoji = verdict === 'FAIL' ? '❌' : '✅';
+            const body = `## 🤖 AuditAgent CI Gate: ${emoji} ${verdict}\n\n${result}`;
+            
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: body
+            });
+            
+            if (verdict === 'FAIL') {
+              core.setFailed('AuditAgent CI Gate: FAIL');
+            }
