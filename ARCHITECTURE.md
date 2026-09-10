@@ -29,8 +29,3 @@ AuditAgent is designed as a real-time financial facilitator (a Toll Booth), not 
 *   **Private Verifier (The Brain):** The dual-auditor (Ling + Gemini) logic lives off-chain. This separation ensures the protocol remains permissionless while the verification logic can evolve to catch new hallucination vectors without requiring on-chain upgrades.
 *   **The Moat:** Code is a commodity; *independent verification* is the product. A fork of the escrow contract cannot fork the trust network or the accumulated reputation state.
 
-## 🏗️ Architectural Philosophy: The "Toll Booth" vs The "Health Inspector"
-AuditAgent is designed as a real-time financial facilitator (a Toll Booth), not a backward-looking compliance tool (a Health Inspector).
-*   **Public Escrow (The Shell):** The Solana program is 100% open-source and transparent. The math for locking, verifying, and splitting the 2% fee is visible to all.
-*   **Private Verifier (The Brain):** The dual-auditor (Ling + Gemini) logic lives off-chain. This separation ensures the protocol remains permissionless while the verification logic can evolve to catch new hallucination vectors without requiring on-chain upgrades.
-*   **The Moat:** Code is a commodity; *independent verification* is the product. A fork of the escrow contract cannot fork the trust network or the accumulated reputation state.
