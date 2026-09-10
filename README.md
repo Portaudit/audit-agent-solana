@@ -69,3 +69,18 @@ AuditAgent is architected to align with the emerging agentic infrastructure stac
 2.  **MCP Server:** Native Model Context Protocol server allowing LLMs to call `lock_escrow` and `release_funds` directly.
 3.  **Visa MPP Adapter:** Bridging fiat card rails (Machine Payments Protocol) with on-chain verified settlements for macro-commerce.
 4.  **Payment Channels:** Batch-auditing MPP streaming sessions (1M TPS) before settlement closes.
+
+## 🛡️ The Vision: AuditAgent is the first product of the TrustRail Protocol
+While "AuditAgent" is the shipped v1 product (escrow + verify + settle), it is the foundational primitive for the broader **TrustRail** thesis: *The Invisible Trust Layer for Autonomous AI.*
+
+### 🌐 Ecosystem Alignment (Solana Foundation 2026 Stack)
+AuditAgent is architected to align with the emerging agentic infrastructure stack:
+*   **Agent Registry:** Our on-chain leaderboard maps directly to the SATI reputation standard. Every settled task is a verifiable reputation attestation.
+*   **x402 Integration:** We provide the "verification co-sign" for x402 payments, preventing wash-trading and hallucinated API calls by locking funds until work is audited.
+*   **Skills:** AuditAgent is packaged to be installable as a Foundation Skill (`npx skills add`), giving any AI agent native access to trust-gated capital.
+
+## 🗺️ v2 Roadmap (Post-Eternal)
+1.  **TrustRail Pipelines:** Multi-stage escrow for agent swarms (Research → Build → Operate), settling only when each stage passes its specific verifier (CI gate, KPI gate, Rubric gate).
+2.  **MCP Server:** Native Model Context Protocol server allowing LLMs to call `lock_escrow` and `release_funds` directly.
+3.  **Visa MPP Adapter:** Bridging fiat card rails (Machine Payments Protocol) with on-chain verified settlements for macro-commerce.
+4.  **Payment Channels:** Batch-auditing MPP streaming sessions (1M TPS) before settlement closes.
