@@ -174,7 +174,6 @@ export default function Home() {
 
       <footer className="w-full max-w-7xl text-center text-slate-500 text-[11px] border-t border-slate-800 pt-2">
         <p>Program ID: <span className="font-mono text-slate-400">QZcT1TGL1jePJumCEhbqpw9QD8F4svxQRPjWSUbhZHh</span> | © 2026 Ishvir & Co — a division of Ishvir and Company (Pty) Ltd</p>
-        <p className="mt-0.5">Built for the Colosseum Eternal Sprint</p>
       </footer>
 
     </main>

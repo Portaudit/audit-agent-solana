@@ -42,7 +42,7 @@ Program ID: `QZcT1TGL1jePJumCEhbqpw9QD8F4svxQRPjWSUbhZHh`
 
 ## Context
 
-Built for the Colosseum Eternal Accelerator & $250k investment.
+Submitted to Colosseum Eternal (Sep 2026) — not selected. Prior work behind TrustRail Pipelines.
 
 Aligned with the Visa × Artemis Agentic Payments Report (July 2026) and the x402 $50B transaction volume milestone.
 
