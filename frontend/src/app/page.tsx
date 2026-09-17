@@ -150,8 +150,7 @@ export default function Home() {
             Escrowed Settlement Rails <span className="text-green-400">for AI Agents.</span>
           </h1>
           <p className="text-xs text-slate-400">
-            Agents get paid only for escrowed and audit-verified work ·{' '}
-            <a href="https://www.visa.com/en-us/thought-leadership/innovation/agentic-payments-from-the-ground-up" target="_blank" rel="noopener noreferrer" className="underline decoration-dotted underline-offset-2 hover:opacity-80">aligned with Visa × Artemis & x402 $50B volume</a>
+            Agents get paid only for escrowed and audit-verified work
           </p>
         </div>
         <Link href="/about" className="text-slate-400 hover:text-green-400 text-sm font-medium transition-colors">About</Link>
