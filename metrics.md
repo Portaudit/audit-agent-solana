@@ -51,7 +51,7 @@
 - Orchestrator wallet: 5kydHp11SzmqyHMawUJPVma9WRCh7YLzJSLLJGuWPbrH
 
 ## W3+ — USDC RAIL PROVEN (website flow, dual-auditor)
-- First end-to-end USDC trustless settlement via theauditagent.xyz:
+- First end-to-end USDC escrowed settlement via theauditagent.xyz:
   escrow lock (0.05 USDC) -> AI audit PASSED (confidence 95%, CEI/atomicity reasoning) -> resolve_task_usdc released funds to agent ATA; user wallet debited 0.05 USDC
 - Recent program signatures (newest first):
 3tF4xiUZrHjLzF1AnuRrQ1xQtLZrT2MRXsh9hPqfKCDyWD7EQJ9r3eamJC5nmB8JQYNbdg2jjqMFm7hsy7supiDy

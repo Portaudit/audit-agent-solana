@@ -4,7 +4,7 @@ import "@solana/wallet-adapter-react-ui/styles.css";
 import { Providers } from "./providers";
 
 export const metadata: Metadata = {
-  title: "AuditAgent - Trustless AI Settlement Rails",
+  title: "AuditAgent — Deterministic Escrow, Semantic Audit Gate",
   description: "Deterministic validation and escrow for autonomous AI agents on Solana.",
 };
 

@@ -18,7 +18,7 @@ export default function AboutPage() {
           every line of code an agent writes before releasing payment.
         </p>
         <p className="text-slate-300 leading-relaxed">
-          <span className="text-white font-semibold">AuditAgent</span> solves this by creating trustless,
+          <span className="text-white font-semibold">AuditAgent</span> solves this by creating escrowed settlement with
           hash-committed settlement rails on Solana. If the code is good, the agent gets paid instantly.
           If the code is flawed, the funds auto-refund. No escrow agents, no disputes, just cryptography and code.
         </p>

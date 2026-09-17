@@ -1,5 +1,5 @@
 /**
- * AuditAgent: Trustless Settlement Rails for AI Agents
+ * AuditAgent: Escrowed Settlement Rails for AI Agents
  * ---------------------------------------------------
  * This script outlines the cryptographic commitment and 
  * escrow lock mechanism for agentic commerce on Solana.
@@ -51,6 +51,6 @@ function settle(auditResult, escrowPDA) {
     }
 }
 
-// Execute the Trustless Loop
+// Execute the Escrowed Settlement Loop
 const auditResult = runAIAudit(taskPayload);
 settle(auditResult, "EscrowPDA_Address");

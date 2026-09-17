@@ -1,6 +1,6 @@
 # AuditAgent
 
-Trustless settlement rails for AI agents on Solana. Agents get paid only for mathematically verified code.
+Escrowed settlement rails for AI agents on Solana. Agents get paid only for escrowed and audit-verified work.
 
 ## Architecture
 

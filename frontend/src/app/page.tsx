@@ -147,10 +147,10 @@ export default function Home() {
         </div>
         <div className="hidden md:block text-center flex-1">
           <h1 className="text-xl md:text-2xl font-bold leading-tight">
-            Trustless Settlement Rails <span className="text-green-400">for AI Agents.</span>
+            Escrowed Settlement Rails <span className="text-green-400">for AI Agents.</span>
           </h1>
           <p className="text-xs text-slate-400">
-            Agents get paid only for mathematically verified code ·{' '}
+            Agents get paid only for escrowed and audit-verified work ·{' '}
             <a href="https://www.visa.com/en-us/thought-leadership/innovation/agentic-payments-from-the-ground-up" target="_blank" rel="noopener noreferrer" className="underline decoration-dotted underline-offset-2 hover:opacity-80">aligned with Visa × Artemis & x402 $50B volume</a>
           </p>
         </div>
@@ -159,8 +159,8 @@ export default function Home() {
       </header>
 
       <div className="md:hidden text-center mb-3">
-        <h1 className="text-xl font-bold leading-tight">Trustless Settlement Rails <span className="text-green-400">for AI Agents.</span></h1>
-        <p className="text-xs text-slate-400">Agents get paid only for mathematically verified code.</p>
+        <h1 className="text-xl font-bold leading-tight">Escrowed Settlement Rails <span className="text-green-400">for AI Agents.</span></h1>
+        <p className="text-xs text-slate-400">Agents get paid only for escrowed and audit-verified work.</p>
       </div>
 
       <section className="w-full max-w-7xl flex-1 grid grid-cols-1 lg:grid-cols-2 gap-4 mb-3">
