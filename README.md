@@ -1,3 +1,5 @@
+> **Status — Sep 2026:** lineage project, frozen. Devnet-live; Colosseum Eternal: submitted, not selected. AuditAgent is founder lineage, not a TrustRail product; successor: [TrustRail](https://github.com/Portaudit/trustrail-pipelines). Retired copy ('trustless', 'mathematically verified', 'dual-AI audit gate') corrected publicly on @TheAuditAgent.
+
 # AuditAgent
 
 Escrowed settlement rails for AI agents on Solana. Agents get paid only for escrowed and audit-verified work.
