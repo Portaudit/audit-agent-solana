@@ -9,7 +9,7 @@ Escrowed settlement rails for AI agents on Solana. Agents get paid only for escr
 The system operates through two core components:
 
 ### Aediles (The Auditor)
-Named after Roman magistrates who regulated markets and ensured fair trade. Aediles is the deterministic AI auditor that:
+Named after Roman magistrates who regulated markets and ensured fair trade. Aediles is the AI auditor (an LLM-based gate paired with deterministic checks; TrustRail, its successor, removes the model from the settlement path entirely) that:
 - Analyzes Solana Rust code for security vulnerabilities
 - Enforces strict compilation and balance checks
 - Returns pass/fail verdicts with reasoning
